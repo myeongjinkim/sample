@@ -26,7 +26,11 @@
  * main()
  * Entry point
  */
+<<<<<<< HEAD
 int main(int argc, char *argv[])  //asdasdasd
+=======
+int main(int argc, char *argv[]) //argc 인자 , *argc[] 환경변수 설정
+>>>>>>> parent of a3070ac... Revert "main 변수설명"
 {
     engine_init(argc, argv);
     engine_mainloop();
