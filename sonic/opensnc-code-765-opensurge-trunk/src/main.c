@@ -26,7 +26,7 @@
  * main()
  * Entry point
  */
-int main(int argc, char *argv[]) //argc 인자 , *argc[] 환경변수 설정
+int main(int argc, char *argv[])
 {
     engine_init(argc, argv);
     engine_mainloop();
@@ -35,3 +35,4 @@ int main(int argc, char *argv[]) //argc 인자 , *argc[] 환경변수 설정
     return 0;
 }
 END_OF_MAIN()
+
