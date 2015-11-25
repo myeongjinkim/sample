@@ -19,6 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+//2D vector stucture 가 있는 함수
+
 #include <math.h>
 #include "v2d.h"
 #include "util.h"
@@ -29,6 +31,7 @@
  * Creates a new 2D vector
  */
 v2d_t v2d_new(float x, float y)
+//x,y 두개의 2D vertor 새로 생성
 {
     v2d_t v = { x , y };
     return v;
@@ -40,6 +43,7 @@ v2d_t v2d_new(float x, float y)
  * Adds two vectors
  */
 v2d_t v2d_add(v2d_t u, v2d_t v)
+//두 백터 u,v 를 입력받아 더한 값 return
 {
     v2d_t w = { u.x + v.x , u.y + v.y };
     return w;
@@ -51,6 +55,7 @@ v2d_t v2d_add(v2d_t u, v2d_t v)
  * Subtracts two vectors
  */
 v2d_t v2d_subtract(v2d_t u, v2d_t v)
+//두 벡터 u,v 를 입력받아 뺀 값 return
 {
     v2d_t w = { u.x - v.x , u.y - v.y };
     return w;
@@ -62,6 +67,7 @@ v2d_t v2d_subtract(v2d_t u, v2d_t v)
  * Multiplies a vector by a scalar
  */
 v2d_t v2d_multiply(v2d_t u, float h)
+//두 벡터 u,v 를 입력받아 곱한 값 return
 {
     v2d_t v = { h * u.x , h * u.y };
     return v;
@@ -73,6 +79,7 @@ v2d_t v2d_multiply(v2d_t u, float h)
  * Returns the magnitude of a given vector
  */
 float v2d_magnitude(v2d_t v)
+//두 백터에 내적한 값에 루트 씌운값 리턴
 {
     return sqrt( (v.x*v.x) + (v.y*v.y) );
 }
@@ -83,6 +90,7 @@ float v2d_magnitude(v2d_t v)
  * Dot product: u.v
  */
 float v2d_dotproduct(v2d_t u, v2d_t v)
+//두 벡터 u,v 를 입력받아 내적한 값 return
 {
     return (u.x*v.x + u.y*v.y);
 }
@@ -93,6 +101,7 @@ float v2d_dotproduct(v2d_t u, v2d_t v)
  * Rotates a vector. Angle in radians.
  */
 v2d_t v2d_rotate(v2d_t v, float ang)
+//한 벡터를 angle(radians) 만큼 회전
 {
     float x = v.x, y = v.y;
     v2d_t w;
@@ -110,6 +119,7 @@ v2d_t v2d_rotate(v2d_t v, float ang)
  * where |v| is the magnitude of v.
  */
 v2d_t v2d_normalize(v2d_t v)
+//벡터의 크기가 1인지 아닌지 비교해서 아니면 1로만드는(정규화) 함수
 {
     float m = v2d_magnitude(v);
     v2d_t w = (m > EPSILON) ? v2d_new(v.x/m,v.y/m) : v2d_new(0,0);
@@ -126,9 +136,9 @@ v2d_t v2d_normalize(v2d_t v)
  * The same as: (1-weight)*u + weight*v
  */
 v2d_t v2d_lerp(v2d_t u, v2d_t v, float weight)
+// 두 벡터의 선형 보간값(두 벡터 끝점 사이의 점을 표시한 값)을 return
 {
     float w = clip(weight, 0.0, 1.0);
     float c = 1.0 - w;
     return v2d_new(u.x*c+v.x*w, u.y*c+v.y*w);
 }
-
