@@ -48,6 +48,7 @@ static void merge_sort_mix(void *base, size_t size, int (*comparator)(const void
  * program if it does not succeed.
  */
 void *mallocx(size_t bytes)
+// memory allocation 을 하나, 만약 allocation 실패시 error message를 띄운다.
 {
     void *p = malloc(bytes);
 
@@ -64,6 +65,7 @@ void *mallocx(size_t bytes)
  * program if it does not succeed.
  */
 void* reallocx(void *ptr, size_t bytes)
+//받은 포인터에 reallocation을 하나, 실패시 error message를 띄운다.
 {
     void *p = realloc(ptr, bytes);
 
@@ -76,12 +78,14 @@ void* reallocx(void *ptr, size_t bytes)
 
 
 /* Game routines */
+//게임 루틴
 
 /*
  * game_quit()
  * Quit game?
  */
 void game_quit(void)
+//게임에서 나가기
 {
     game_over = TRUE;
 }
@@ -93,6 +97,7 @@ END_OF_FUNCTION(game_quit)
  * Game over?
  */
 int game_is_over()
+//게임 오버
 {
     return game_over;
 }
@@ -107,6 +112,7 @@ int game_is_over()
  * > 0 (game version is superior)
  */
 int game_version_compare(int version, int sub_version, int wip_version)
+//실행한 게임의 버전과 게임 버전을 비교
 {
     int game_version = (GAME_VERSION*10000 + GAME_SUB_VERSION*100 + GAME_WIP_VERSION);
     int other_version = (version*10000 + sub_version*100 + wip_version);
@@ -124,6 +130,8 @@ int game_version_compare(int version, int sub_version, int wip_version)
  * r[4] = x1, y1, x2(=x1+w), y2(=y1+h)
  */
 int bounding_box(float a[4], float b[4])
+//충돌시 경계를 가지는 bounding_box 를 받아 리턴하는 함수
+//네 좌표의 array에는 x 위치 , y위치, x 위치 + width, y위치 + height 가 있다.
 {
     return (a[0]<b[2] && a[2]>b[0] && a[1]<b[3] && a[3]>b[1]);
 }
@@ -276,4 +284,3 @@ void merge_sort_mix(void *base, size_t size, int (*comparator)(const void*,const
 
     free(arr);
 }
-
