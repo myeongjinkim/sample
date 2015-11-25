@@ -41,7 +41,7 @@ struct animal_t {
     int is_running;
 };
 
-static void animal_init(item_t *item);
+static void animal_init(item_t *item); //asdasdasd
 static void animal_release(item_t* item);
 static void animal_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list);
 static void animal_render(item_t* item, v2d_t camera_position);
