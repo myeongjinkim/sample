@@ -28,18 +28,17 @@
 /* private stuff */
 typedef struct camera_t camera_t;
 struct camera_t {
-    /* the camera is actually a particle */
-    v2d_t position; /* current position */
-    v2d_t dest; /* target position: used to make things smooth */
-    float speed; /* the camera will move from position to dest in speed px/s */
+    v2d_t position; /* 현재 position */
+    v2d_t dest; /* 타켓 position : 부드럽게 하기 위해 사용한다. */
+    float speed; /* 카메라는 px/s의 속도로 position에서 dest로 이동한다. */
 
-    /* the camera is only allowed to see within the bounds of region[] */
-    v2d_t region_topleft, region_bottomright; /* this describes a rectangle: current boundaries */
+    /* 카메라는 오직 region 배열의 boundary 안에서만 확인할 수 있다. */
+    v2d_t region_topleft, region_bottomright; /* 사각형으로 표시한다. : 현재의 boundaries */
     v2d_t dest_region_topleft, dest_region_bottomright; /* target boundaries */
     float region_topleft_speed, region_bottomright_speed; /* speed, in px/s */
 
     /* misc */
-    int is_locked; /* is the camera locked or can it move freely in the level? */
+    int is_locked; /* 카메라가 locked 되있거나 level에서 자유롭게 움직일 수 있는지 확인한다. */
 };
 
 static camera_t camera;
@@ -52,7 +51,7 @@ static void update_boundaries();
 
 /*
  * camera_init()
- * initializes the camera
+ * 카메라를 초기화하는 함수
  */
 void camera_init()
 {
@@ -71,7 +70,7 @@ void camera_init()
 
 /*
  * camera_update()
- * updates the camera
+ * 카메라를 업데이트하는 함수
  */
 void camera_update()
 {
@@ -79,10 +78,10 @@ void camera_update()
     float dt = timer_get_delta();
     v2d_t ds;
 
-    /* the level size may have changed during the last frame */
+    /* level사이즈는 마지막 프레임 동안 변경될 수 있다. */
     update_boundaries();
 
-    /* updating the camera position */
+    /* 카메라 position을 업데이트한다. */
     ds = v2d_subtract(camera.dest, camera.position);
     if(v2d_magnitude(ds) > threshold) {
         ds = v2d_normalize(ds);
@@ -90,7 +89,7 @@ void camera_update()
         camera.position.y += ds.y * camera.speed * dt;
     }
 
-    /* updating the feasible region */
+    /* 가능한 지역을 업데이트한다. */
     ds = v2d_subtract(camera.dest_region_topleft, camera.region_topleft);
     if(v2d_magnitude(ds) > threshold) {
         ds = v2d_normalize(ds);
@@ -112,7 +111,7 @@ void camera_update()
 
 /*
  * camera_release()
- * releases the camera
+ * 카메라를 해제하는 함수
  */
 void camera_release()
 {
@@ -121,7 +120,7 @@ void camera_release()
 
 /*
  * camera_move_to()
- * moves the camera to a new position within a few seconds
+ * 단시간에 카메라를 새로운 position으로 이동시키는 함수
  */
 void camera_move_to(v2d_t position, float seconds)
 {
@@ -138,10 +137,10 @@ void camera_move_to(v2d_t position, float seconds)
     if(position.y > camera.region_bottomright.y)
         position.y = camera.region_bottomright.y;
 
-    /* updating the target position */
+    /* 타켓 position을 업데이트한다. */
     camera.dest = position;
 
-    /* hey, don't move too fast! */
+    /* 너무 빠르게 움직이지 않도록 한다. */
     if(seconds > EPSILON)
         camera.speed = v2d_magnitude( v2d_subtract(camera.position, camera.dest) ) / seconds;
     else
@@ -151,7 +150,7 @@ void camera_move_to(v2d_t position, float seconds)
 
 /*
  * camera_lock()
- * locks the camera, so it will only move within the given rectangle (in pixels)
+ * 카메라를 lock하는 함수. 픽셀로된 지정된 사각형 안에서만 이동한다.
  */
 void camera_lock(int x1, int y1, int x2, int y2)
 {
@@ -161,7 +160,7 @@ void camera_lock(int x1, int y1, int x2, int y2)
 
 /*
  * camera_unlock()
- * unlocks the camera, so it will move freely in the level
+ * 카메라의 lock을 해제하는 함수, level안에서 자유롭게 움직일 수 있다.
  */
 void camera_unlock()
 {
@@ -170,7 +169,7 @@ void camera_unlock()
 
 /*
  * camera_get_position()
- * returns the position of the camera
+ * 카메라의 position을 return해주는 함수.
  */
 v2d_t camera_get_position()
 {
@@ -179,7 +178,7 @@ v2d_t camera_get_position()
 
 /*
  * camera_set_position()
- * sets a new position
+ * 새로운 positon을 설정하는 함수
  */
 void camera_set_position(v2d_t position)
 {
@@ -188,7 +187,7 @@ void camera_set_position(v2d_t position)
 
 /*
  * camera_is_locked()
- * Is the camera locked?
+ * 카메라가 lock되어 있는지 확인하는 함수.
  */
 int camera_is_locked()
 {

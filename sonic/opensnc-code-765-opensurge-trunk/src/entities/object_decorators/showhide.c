@@ -26,8 +26,8 @@
 /* objectdecorator_showhide_t class */
 typedef struct objectdecorator_showhide_t objectdecorator_showhide_t;
 struct objectdecorator_showhide_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    int show; /* TRUE or FALSE */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    int show; /* TRUE / FALSE */
 };
 
 /* private methods */
@@ -41,7 +41,7 @@ static objectmachine_t* make_decorator(objectmachine_t *decorated_machine, int s
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_show_new(objectmachine_t *decorated_machine)
 {
     return make_decorator(decorated_machine, TRUE);
@@ -53,7 +53,7 @@ objectmachine_t* objectdecorator_hide_new(objectmachine_t *decorated_machine)
 }
 
 
-/* make decorator */
+/* decorator를 만든다 */
 static objectmachine_t* make_decorator(objectmachine_t *decorated_machine, int show)
 {
     objectdecorator_showhide_t *me = mallocx(sizeof *me);
@@ -64,7 +64,7 @@ static objectmachine_t* make_decorator(objectmachine_t *decorated_machine, int s
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     me->show = show;
@@ -118,4 +118,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

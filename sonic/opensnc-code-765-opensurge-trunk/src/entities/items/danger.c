@@ -1,35 +1,9 @@
-/*
- * Open Surge Engine
- * danger.c - danger item (useful on spikes)
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include "danger.h"
 #include "../../core/util.h"
 #include "../../core/stringutil.h"
 #include "../../scenes/level.h"
-#include "../player.h"
-#include "../brick.h"
-#include "../item.h"
-#include "../enemy.h"
-#include "../actor.h"
 
-/* danger class */
+/* danger 클래스 */
 typedef struct danger_t danger_t;
 struct danger_t {
     item_t item; /* base class */
@@ -47,29 +21,29 @@ static int always_vulnerable(player_t *player);
 static int can_defend_against_fire(player_t *player);
 
 
-/* public methods */
+/* 위험 경고 알려주는 경계수평선 반환 */
 item_t* horizontaldanger_create()
 {
     return danger_create("SD_DANGER", always_vulnerable);
 }
-
+/* 위험 경고 알려주는 경계수직선 반환 */
 item_t* verticaldanger_create()
 {
     return danger_create("SD_VERTICALDANGER", always_vulnerable);
 }
-
+/* 위험 경고 알려주는 경계수평선 반환 */
 item_t* horizontalfiredanger_create()
 {
     return danger_create("SD_FIREDANGER", can_defend_against_fire);
 }
-
+/* 위험 경고 알려주는 경계수직선 반환 */
 item_t* verticalfiredanger_create()
 {
     return danger_create("SD_VERTICALFIREDANGER", can_defend_against_fire);
 }
 
 
-/* private methods */
+/* 위험신호 객체 생성 */
 item_t* danger_create(const char *sprite_name, int (*player_is_vulnerable)(player_t*))
 {
     item_t *item = mallocx(sizeof(danger_t));
@@ -85,12 +59,11 @@ item_t* danger_create(const char *sprite_name, int (*player_is_vulnerable)(playe
 
     return item;
 }
-
+/* 위험신호 생성 */
 void danger_init(item_t *item)
 {
     danger_t *me = (danger_t*)item;
 
-    item->always_active = FALSE;
     item->obstacle = FALSE;
     item->bring_to_back = TRUE;
     item->preserve = TRUE;
@@ -100,7 +73,7 @@ void danger_init(item_t *item)
 }
 
 
-
+/* 위험신호 삭제 움직임이 자유로워짐 */
 void danger_release(item_t* item)
 {
     danger_t *me = (danger_t*)item;
@@ -110,7 +83,7 @@ void danger_release(item_t* item)
 }
 
 
-
+/* 위험신호 모습*/
 void danger_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list)
 {
     int i;
@@ -119,27 +92,27 @@ void danger_update(item_t* item, player_t** team, int team_size, brick_list_t* b
 
     for(i=0; i<team_size; i++) {
         player_t *player = team[i];
-        if(!player_is_dying(player) && !player->blinking && !player->invincible && actor_collision(act, player->actor)) {
+        if(!player->dying && !player->blinking && !player->invincible && actor_collision(act, player->actor)) {
             if(me->player_is_vulnerable(player))
-                player_hit(player, act);
+                player_hit(player);
         }
     }
 
     act->visible = level_editmode();
 }
 
-
+/* 위험신호 나타내는 모습 */
 void danger_render(item_t* item, v2d_t camera_position)
 {
     actor_render(item->actor, camera_position);
 }
 
-/* misc */
+/* 캐릭터가 상처입음을 표시 반환 */
 int always_vulnerable(player_t *player)
 {
     return TRUE;
 }
-
+/* 캐릭터의 방어막 생성 반환 */
 int can_defend_against_fire(player_t *player)
 {
     return (player->shield_type != SH_FIRESHIELD);

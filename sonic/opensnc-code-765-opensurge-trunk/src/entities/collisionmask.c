@@ -29,7 +29,7 @@
 
 /* private stuff ;) */
 struct collisionmask_t {
-    image_t *mask; /* it's a sub-image from some sheet */
+    image_t *mask; /* 몇 가지 시트의 sub-image */
 };
 
 typedef struct cmdetails_t {
@@ -128,4 +128,3 @@ int traverse(const parsetree_statement_t *stmt, void *cmdetails)
 
     return 0;
 }
-

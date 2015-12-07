@@ -30,7 +30,7 @@
 /* objectdecorator_playeraction_t class */
 typedef struct objectdecorator_playeraction_t objectdecorator_playeraction_t;
 struct objectdecorator_playeraction_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     void (*update)(player_t*); /* strategy */
 };
 
@@ -59,7 +59,7 @@ static void resetunderwatertimer(player_t *player);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_springfyplayer_new(objectmachine_t *decorated_machine)
 {
     return make_decorator(decorated_machine, springfy);
@@ -131,7 +131,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, void (*updat
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->update = update_strategy;
 

@@ -1,40 +1,15 @@
-/*
- * Open Surge Engine
- * endsign.c - end sign (touch it to clear the level)
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include "endsign.h"
 #include "../../core/util.h"
-#include "../../core/stringutil.h"
 #include "../../core/soundfactory.h"
 #include "../../scenes/level.h"
-#include "../player.h"
-#include "../brick.h"
-#include "../item.h"
-#include "../enemy.h"
-#include "../actor.h"
 
-/* endsign class */
+/* endsign 클래스 */
 typedef struct endsign_t endsign_t;
 struct endsign_t {
     item_t item; /* base class */
-    player_t *who; /* who has touched the end sign? */
+    player_t *who;
+    /* endsign을 누가 먼저 접근 하는지 */
 };
 
 static void endsign_init(item_t *item);
@@ -44,7 +19,7 @@ static void endsign_render(item_t* item, v2d_t camera_position);
 
 
 
-/* public methods */
+/* endsign 객체 생성 */
 item_t* endsign_create()
 {
     item_t *item = mallocx(sizeof(endsign_t));
@@ -58,14 +33,13 @@ item_t* endsign_create()
 }
 
 
-/* private methods */
+/* endsign 상태 생성 */
 void endsign_init(item_t *item)
 {
     endsign_t *me = (endsign_t*)item;
 
-    item->always_active = FALSE;
     item->obstacle = FALSE;
-    item->bring_to_back = TRUE;
+    item->bring_to_back = FALSE;
     item->preserve = TRUE;
     item->actor = actor_create();
 
@@ -74,27 +48,28 @@ void endsign_init(item_t *item)
 }
 
 
-
+/* endsign 상태 파괴 */
 void endsign_release(item_t* item)
 {
     actor_destroy(item->actor);
 }
 
 
-
+/* endsign 특성 생성 */
 void endsign_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list)
 {
     endsign_t *me = (endsign_t*)item;
     actor_t *act = item->actor;
 
     if(me->who == NULL) {
-        /* I haven't been touched yet */
+        /* 접촉 하지 않은 상태*/
         int i;
 
         for(i=0; i<team_size; i++) {
             player_t *player = team[i];
-            if(!player_is_dying(player) && actor_pixelperfect_collision(player->actor, act)) {
-                me->who = player; /* I have just been touched by 'player' */
+            if(!player->dying && actor_pixelperfect_collision(player->actor, act)) {
+                me->who = player;
+                /* 플레이어가 접근 하였는지 */
                 sound_play( soundfactory_get("end sign") );
                 actor_change_animation(act, sprite_get_animation("SD_ENDSIGN", 1));
                 level_clear(item->actor);
@@ -102,27 +77,17 @@ void endsign_update(item_t* item, player_t** team, int team_size, brick_list_t* 
         }
     }
     else {
-        /* me->who has touched me! */
+        /* 누가 접근 하였는지 */
         if(actor_animation_finished(act)) {
-            int anim_id;
-
-            if(str_icmp(me->who->name, "Surge") == 0)
-                anim_id = 2;
-            else if(str_icmp(me->who->name, "Neon") == 0)
-                anim_id = 3;
-            else if(str_icmp(me->who->name, "Charge") == 0)
-                anim_id = 4;
-            else
-                anim_id = 5;
-
+            int anim_id = 2 + me->who->type;
+            /* 안전 한 상태 */
             actor_change_animation(act, sprite_get_animation("SD_ENDSIGN", anim_id));
         }
     }
 }
 
-
+/* endsign 모습 */
 void endsign_render(item_t* item, v2d_t camera_position)
 {
     actor_render(item->actor, camera_position);
 }
-

@@ -25,10 +25,10 @@
 #include "../../core/stringutil.h"
 #include "../actor.h"
 
-/* objectdecorator_setscale_t class */
+/* objectdecorator_setscale_t 클래스 */
 typedef struct objectdecorator_setscale_t objectdecorator_setscale_t;
 struct objectdecorator_setscale_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     expression_t *scale_x, *scale_y;
 };
 
@@ -38,13 +38,9 @@ static void release(objectmachine_t *obj);
 static void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 static void render(objectmachine_t *obj, v2d_t camera_position);
 
-
-
-
-
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setscale_new(objectmachine_t *decorated_machine, expression_t *scale_x, expression_t *scale_y)
 {
     objectdecorator_setscale_t *me = mallocx(sizeof *me);
@@ -55,7 +51,7 @@ objectmachine_t* objectdecorator_setscale_new(objectmachine_t *decorated_machine
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->scale_x = scale_x;
     me->scale_y = scale_y;
@@ -114,4 +110,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

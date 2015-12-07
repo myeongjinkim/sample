@@ -45,7 +45,7 @@
 /* private stuff */
 #define MAX_OBJECTS                     10240
 #define MAX_CATEGORIES                  10240
-#define ROOT_CATEGORY                   category_table.category[0] /* all objects belong to the root category */
+#define ROOT_CATEGORY                   category_table.category[0] /* 모든 객체는 root 카테고리에 속한다. */
 
 typedef parsetree_program_t objectcode_t;
 HASHTABLE_GENERATE_CODE(objectcode_t);
@@ -87,7 +87,7 @@ static hashtable_objectcode_t* lookup_table;
 
 /*
  * objects_init()
- * Initializes this module
+ * 모듈을 초기화하는 함수.
  */
 void objects_init()
 {
@@ -99,28 +99,28 @@ void objects_init()
     /* reading the parse tree */
     foreach_resource(path, dirfill, (void*)(&objects), TRUE);
 
-    /* creating the name table */
+    /* name 테이블을 생성 */
     name_table.length = 0;
     nanoparser_traverse_program_ex(objects, (void*)(&name_table), fill_object_names);
     qsort(name_table.name, name_table.length, sizeof(name_table.name[0]), object_name_table_cmp);
 
-    /* creating the category table */
+    /* 카테고리 테이블을 생성 */
     ROOT_CATEGORY = "*"; /* name of the root category */
     category_table.length = 1; /* the length of the table is at least one, as it contains the root category */
     nanoparser_traverse_program_ex(objects, (void*)(&category_table), prepare_to_fill_object_categories);
     qsort(category_table.category, category_table.length, sizeof(category_table.category[0]), object_category_table_cmp);
 
-    /* creating a lookup table to find objects fast */
+    /* 객체를 빠르게 찾기위한 lookup 테이블 생성 */
     lookup_table = hashtable_objectcode_t_create(NULL);
     nanoparser_traverse_program_ex(objects, (void*)lookup_table, fill_lookup_table);
 
-    /* done! */
+    /* 완료되면 message를 보여준다. */
     logfile_message("All objects have been loaded!");
 }
 
 /*
  * objects_release()
- * Releases this module
+ * 모듈을 해제하는 함수.
  */
 void objects_release()
 {
@@ -131,7 +131,7 @@ void objects_release()
 
 /*
  * objects_get_list_of_names()
- * Returns an array v[0..n-1] of available object names
+ * 사용가능한 객체의 이름들의 배열 v[0.,n-1]을 return해주는 함수.
  */
 const char** objects_get_list_of_names(int *n)
 {
@@ -142,7 +142,7 @@ const char** objects_get_list_of_names(int *n)
 
 /*
  * objects_get_list_of_categories()
- * Returns an array v[0..n-1] of available object categories
+ * 사용가능한 객체의 카테고리들의 배열 v[0.,n-1]을 return해주는 함수.
  */
 const char** objects_get_list_of_categories(int *n)
 {
@@ -160,7 +160,7 @@ const char** objects_get_list_of_categories(int *n)
 
 /*
  * enemy_create()
- * Creates a new enemy
+ * 새로운 enemy를 생성하는 함수.
  */
 enemy_t *enemy_create(const char *name)
 {
@@ -170,43 +170,43 @@ enemy_t *enemy_create(const char *name)
 
 /*
  * enemy_destroy()
- * Destroys an enemy
+ * enemy를 삭제한다.
  */
 enemy_t *enemy_destroy(enemy_t *enemy)
 {
     object_children_t *it;
 
-    /* tell my children I died */
+    /* 자식노드에게 자신이 삭제되었음을 알린다. */
     for(it=enemy->children; it; it=it->next)
         it->data->parent = NULL;
 
-    /* destroy my children list */
+    /* 나의 자식 리스트를 삭제한다. */
     object_children_delete(enemy->children);
 
-    /* tell my parent I died */
+    /* 부모노드에 자신이 삭제되었음을 알린다. */
     if(enemy->parent != NULL)
         enemy_remove_child(enemy->parent, enemy);
 
-    /* destroy my virtual machine */
+    /* 나의 가상머신을 삭제한다. */
     objectvm_destroy(enemy->vm);
 
-    /* destroy my categories */
+    /* 나의 카테고리를 삭제한다. */
     if(enemy->category != NULL)
         free(enemy->category);
 
-    /* destroy me */
+    /* 나를 삭제한다. */
     actor_destroy(enemy->actor);
     free(enemy->name);
     free(enemy);
 
-    /* success */
+    /* 완료 */
     return NULL;
 }
 
 
 /*
  * enemy_update()
- * Runs every cycle of the game to update an enemy
+ * enemy를 업데이트할 수 있는 게임의 매 cycle마다 실행한다.
  */
 void enemy_update(enemy_t *enemy, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, enemy_list_t *object_list)
 {
@@ -220,7 +220,7 @@ void enemy_update(enemy_t *enemy, player_t **team, int team_size, brick_list_t *
 
 /*
  * enemy_render()
- * Renders an enemy
+ * enemy를 생성하는 함수
  */
 void enemy_render(enemy_t *enemy, v2d_t camera_position)
 {
@@ -237,7 +237,7 @@ void enemy_render(enemy_t *enemy, v2d_t camera_position)
 
 /*
  * enemy_get_parent()
- * Finds the parent of this object
+ * 객체의 부모를 찾아주는 함수
  */
 enemy_t *enemy_get_parent(enemy_t *enemy)
 {
@@ -247,7 +247,7 @@ enemy_t *enemy_get_parent(enemy_t *enemy)
 
 /*
  * enemy_get_child()
- * Finds a child of this object
+ * 객체의 자식을 찾아주는 함수
  */
 enemy_t *enemy_get_child(enemy_t *enemy, const char *child_name)
 {
@@ -257,7 +257,7 @@ enemy_t *enemy_get_child(enemy_t *enemy, const char *child_name)
 
 /*
  * enemy_add_child()
- * Adds a child to this object
+ * 객체의 자식을 추가하는 함수
  */
 void enemy_add_child(enemy_t *enemy, const char *child_name, enemy_t *child)
 {
@@ -268,7 +268,7 @@ void enemy_add_child(enemy_t *enemy, const char *child_name, enemy_t *child)
 
 /*
  * enemy_remove_child()
- * Removes a child from this object (the child is not deleted, though)
+ * 이 객체의 자식을 제거한다. (자식은 삭제되지는 않는다.)
  */
 void enemy_remove_child(enemy_t *enemy, enemy_t *child)
 {
@@ -277,7 +277,7 @@ void enemy_remove_child(enemy_t *enemy, enemy_t *child)
 
 /*
  * enemy_visit_children()
- * Calls fun for each of the children of the object. any_data is anything you want.
+ * 객체의 각각의 자식에 대한 fun을 호출한다. any_data는 당신이 원하는 무엇이든 될 수 있다.
  */
 void enemy_visit_children(enemy_t *enemy, void *any_data, void (*fun)(enemy_t*,void*))
 {
@@ -287,7 +287,7 @@ void enemy_visit_children(enemy_t *enemy, void *any_data, void (*fun)(enemy_t*,v
 
 /*
  * enemy_get_observed_player()
- * returns the observed player
+ * 관찰중인 player를 return해주는 함수
  */
 player_t *enemy_get_observed_player(enemy_t *enemy)
 {
@@ -296,7 +296,7 @@ player_t *enemy_get_observed_player(enemy_t *enemy)
 
 /*
  * enemy_observe_player()
- * observes a new player
+ * 새로운 player를 관찰하는 함수
  */
 void enemy_observe_player(enemy_t *enemy, player_t *player)
 {
@@ -305,7 +305,7 @@ void enemy_observe_player(enemy_t *enemy, player_t *player)
 
 /*
  * enemy_observe_current_player()
- * observes the current player
+ * 현재의 player를 관찰하는 함수
  */
 void enemy_observe_current_player(enemy_t *enemy)
 {
@@ -314,7 +314,7 @@ void enemy_observe_current_player(enemy_t *enemy)
 
 /*
  * enemy_observe_active_player()
- * observes the active player
+ * 활성화된 player를 관찰하는 함수.
  */
 void enemy_observe_active_player(enemy_t *enemy)
 {
@@ -323,7 +323,7 @@ void enemy_observe_active_player(enemy_t *enemy)
 
 /*
  * enemy_belongs_to_category()
- * checks if a given object belongs to a category
+ * 지정된 객체가 카테고리에 속하는 지 확인하는 함수.
  */
 int enemy_belongs_to_category(enemy_t *enemy, const char *category)
 {
@@ -350,7 +350,7 @@ enemy_t* create_from_script(const char *object_name)
     enemy_t* e = mallocx(sizeof *e);
     objectcode_t *object_code;
 
-    /* setup the object */
+    /* 객체를 설정한다. */
     e->name = str_dup(object_name);
     e->annotation = "";
     e->category = NULL;
@@ -375,7 +375,7 @@ enemy_t* create_from_script(const char *object_name)
     e->attached_to_player = FALSE;
     e->attached_to_player_offset = v2d_new(0,0);
 
-    /* Let's compile the object */
+    /* 객체에 대한 컴파일을 실행한다. */
     object_code = hashtable_objectcode_t_find(lookup_table, object_name);
     if(object_code != NULL)
         objectcompiler_compile(e, object_code);

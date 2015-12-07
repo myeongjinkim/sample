@@ -87,13 +87,13 @@
 #include "object_decorators/reset_globals.h"
 
 /* expression evaluator (nanocalc) helper */
-/* given a string, makes an expression_t object */
-/* ps: an objectmachine_t** named m must be available in the context */
+/* 문자열이 주어지면, expression_t 객체를 생성한다. */
+/* ps: objectmachine_t** 변수 m은 이 context에서 사용할수 있어야한다. */
 #define EXPRESSION(str)  expression_new((str), objectvm_get_symbol_table(((*m)->get_object_instance(*m))->vm))
 
 /* compile error macro helper */
-/* given an error message, kills the program and tells where the error has ocurred in the script */
-/* ps: a parsetree_statement_t* named stmt must be available in the context */
+/* 에러메시지가 주어지면, program을 죽이고 script 어디에서 에러가 발생했는지 알려준다. */
+/* ps: parsetree_statement_t* 변수 stmt은 이 context에서 사용할수 있어야한다. */
 #define COMPILE_ERROR(...) compile_error(stmt, __VA_ARGS__)
 
 
@@ -113,15 +113,15 @@ static int stacksize;
 /* -------------------------------------- */
 
 /*
-   available actions:
+   가능한 작업 :
    -----------------------------------------------
    they all receive:
-   1. m         : reference to an object machine (used to add a decorator to the machine)
-   2. n         : the length of the array containing the parameters
-   3. p[0..n-1] : the array containing the parameters
+   1. m         : 객체 시스템을 참조 ( machine에 decorator를 추가하는데 사용 )
+   2. n         : parameters를 포함하는 배열의 길이
+   3. p[0..n-1] : parameters를 포함하는 배열
 */
 
-/* basic actions */
+/* 기본 동작 */
 static void set_animation(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void set_animation_frame(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void set_animation_speed_factor(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -134,7 +134,7 @@ static void hide(objectmachine_t** m, int n, const char **p, const parsetree_sta
 static void show(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void enemy(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* player interaction */
+/* player 상호작용 */
 static void lock_camera(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void move_player(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void kill_player(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -173,7 +173,7 @@ static void switch_character(objectmachine_t** m, int n, const char **p, const p
 static void simulate_button_down(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void simulate_button_up(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* movement */
+/* 동작 */
 static void walk(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void gravity(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void jump(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -185,7 +185,7 @@ static void look_right(objectmachine_t** m, int n, const char **p, const parsetr
 static void look_at_player(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void look_at_walking_direction(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* object management */
+/* 객체 관리 */
 static void create_item(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void change_closest_object_state(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void create_child(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -194,15 +194,15 @@ static void change_parent_state(objectmachine_t** m, int n, const char **p, cons
 static void destroy(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void set_zindex(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* text output */
+/* text 출력 */
 static void t_textout(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void t_textout_centre(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void t_textout_right(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* fast loops */
+/* 빠른 loops */
 static void execute(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* events */
+/* 이벤트 */
 static void change_state(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void return_to_previous_state(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void on_timeout(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -255,7 +255,7 @@ static void on_camera_focus_player(objectmachine_t** m, int n, const char **p, c
 static void on_camera_lock(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void on_music_play(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* variables */
+/* 변수 */
 static void var_let(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void var_if(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void var_unless(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
@@ -274,23 +274,23 @@ static void load_level(objectmachine_t** m, int n, const char **p, const parsetr
 static void request_camera_focus(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void drop_camera_focus(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* quest */
+/* 퀘스트 */
 static void push_quest(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void pop_quest(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* audio commands */
+/* 음성 명령 */
 static void audio_play_sample(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void audio_play_music(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void audio_play_level_music(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void audio_set_music_volume(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 static void audio_stop_sample(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
-/* misc */
+/* 기타 */
 static void m_launch_url(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt);
 
 /* -------------------------------------- */
 
-/* command table */
+/* 명령 table */
 typedef struct {
     const char *command;
     void (*action)(objectmachine_t**,int,const char**,const parsetree_statement_t*);
@@ -480,7 +480,7 @@ static entry_t command_table[] = {
 
 /*
  * objectcompiler_compile()
- * Compiles the given script
+ * 주어진 script를 컴파일하는 함수
  */
 void objectcompiler_compile(object_t *obj, const parsetree_program_t *script)
 {
@@ -522,7 +522,7 @@ int traverse_object(const parsetree_statement_t* stmt, void *object)
 
         stacksize = 0;
         nanoparser_traverse_program_ex(state_code, (void*)machine_ref, push_object_state);
-        while(stacksize-- > 0) /* traverse in reverse order - note the order of the decorators */
+        while(stacksize-- > 0) /* 역순으로 횡단 - decorator의 순서를 확인한다. */
             traverse_object_state(stack[stacksize].stmt, stack[stacksize].machine);
 
         (*machine_ref)->init(*machine_ref);
@@ -608,13 +608,13 @@ int traverse_object(const parsetree_statement_t* stmt, void *object)
 
 int traverse_object_state(const parsetree_statement_t* stmt, void *machine)
 {
-    objectmachine_t **ref = (objectmachine_t**)machine; /* reference to the current object machine */
-    const char *id = nanoparser_get_identifier(stmt); /* command string */
+    objectmachine_t **ref = (objectmachine_t**)machine; /* 현재 객체 machine을 참조한다. */
+    const char *id = nanoparser_get_identifier(stmt); /* 명령 문자열 */
     const parsetree_parameter_t *param_list = nanoparser_get_parameter_list(stmt);
     const char **p_k;
     int i, n;
 
-    /* creates the parameter list: p_k[0..n-1] */
+    /* parameter list를 생성한다 : p_k[0..n-1] */
     n = nanoparser_get_number_of_parameters(param_list);
     p_k = mallocx(n * (sizeof *p_k));
     for(i=0; i<n; i++) {
@@ -623,13 +623,13 @@ int traverse_object_state(const parsetree_statement_t* stmt, void *machine)
         p_k[i] = nanoparser_get_string(p);
     }
 
-    /* adds the corresponding decorator to the machine */
+    /* machine에 해당하는 decorator를 추가한다. */
     compile_command(ref, id, n, p_k, stmt);
 
-    /* releases the parameter list */
+    /* parameter list를 해제 */
     free(p_k);
 
-    /* done! :-) */
+    /* 완료 */
     return 0;
 }
 
@@ -651,7 +651,7 @@ void compile_command(objectmachine_t** machine_ref, const char *command, int n, 
     int i = 0;
     entry_t e = command_table[i++];
 
-    /* finds the corresponding command in the table */
+    /* table에서 해당하는 명령을 찾는다. */
     while(e.command != NULL && e.action != NULL) {
         if(str_icmp(e.command, command) == 0) {
             (e.action)(machine_ref, n, (const char**)param, stmt);
@@ -838,7 +838,7 @@ void create_item(objectmachine_t** m, int n, const char **p, const parsetree_sta
 void create_child(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt)
 {
     if(n == 1)
-        *m = objectdecorator_createchild_new(*m, p[0], EXPRESSION("0"), EXPRESSION("0"), "\201"); /* dummy child name */
+        *m = objectdecorator_createchild_new(*m, p[0], EXPRESSION("0"), EXPRESSION("0"), "\201");
     else if(n == 2)
         *m = objectdecorator_createchild_new(*m, p[0], EXPRESSION(p[1]), EXPRESSION("0"), "\201");
     else if(n == 3)
@@ -1844,20 +1844,20 @@ void t_textout_right(objectmachine_t** m, int n, const char **p, const parsetree
 void execute(objectmachine_t** m, int n, const char **p, const parsetree_statement_t *stmt)
 {
     if(n == 1)
-        *m = objectdecorator_execute_new(*m, p[0]); /* execute <state> */
+        *m = objectdecorator_execute_new(*m, p[0]); /* <state> 실행 */
     else if(n == 3) {
         if(str_icmp(p[1], "if") == 0)
-            *m = objectdecorator_executeif_new(*m, p[0], EXPRESSION(p[2])); /* execute <state> if <expr> */
+            *m = objectdecorator_executeif_new(*m, p[0], EXPRESSION(p[2])); /* <expr> 일때 <state> 실행 */
         else if(str_icmp(p[1], "unless") == 0)
-            *m = objectdecorator_executeunless_new(*m, p[0], EXPRESSION(p[2])); /* execute <state> unless <expr> */
+            *m = objectdecorator_executeunless_new(*m, p[0], EXPRESSION(p[2])); /* <expr>가 아닐때 <state> 실행*/
         else if(str_icmp(p[1], "while") == 0)
-            *m = objectdecorator_executewhile_new(*m, p[0], EXPRESSION(p[2])); /* execute <state> while <expr> */
+            *m = objectdecorator_executewhile_new(*m, p[0], EXPRESSION(p[2])); /* <expr>인 동안 <state> 실행 */
         else
             COMPILE_ERROR("Object script error - invalid syntax for command execute (3 args)");
     }
     else if(n == 5) {
         if(str_icmp(p[1], "for") == 0)
-            *m = objectdecorator_executefor_new(*m, p[0], EXPRESSION(p[2]), EXPRESSION(p[3]), EXPRESSION(p[4])); /* execute <state> for <e1> <e2> <e3> */
+            *m = objectdecorator_executefor_new(*m, p[0], EXPRESSION(p[2]), EXPRESSION(p[3]), EXPRESSION(p[4])); /* <e1> <e2> <e3>에 대한 <state> 실행 */
         else
             COMPILE_ERROR("Object script error - invalid syntax for command execute (5 args)");
     }

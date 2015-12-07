@@ -31,9 +31,9 @@
 /* objectdecorator_switchcharacter_t class */
 typedef struct objectdecorator_switchcharacter_t objectdecorator_switchcharacter_t;
 struct objectdecorator_switchcharacter_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    char *name; /* character name */
-    int force_switch; /* forces the character switch, even if the engine does not want it */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    char *name; /* character 이름 */
+    int force_switch; /* engine이 원하지 않더라도 character 스위치를 변환한다.  */
 };
 
 /* private methods */
@@ -46,7 +46,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_switchcharacter_new(objectmachine_t *decorated_machine, const char *name, int force_switch)
 {
     objectdecorator_switchcharacter_t *me = mallocx(sizeof *me);
@@ -57,7 +57,7 @@ objectmachine_t* objectdecorator_switchcharacter_new(objectmachine_t *decorated_
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     me->name = (name != NULL && *name != 0) ? str_dup(name) : NULL;
@@ -99,7 +99,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     objectmachine_t *decorated_machine = dec->decorated_machine;
     objectdecorator_switchcharacter_t *me = (objectdecorator_switchcharacter_t*)obj;
     object_t *object = obj->get_object_instance(obj);
-    player_t *player = level_player(); /* active player */
+    player_t *player = level_player(); /* 활성화된 player */
     player_t *new_player = NULL;
     int i;
 
@@ -140,4 +140,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

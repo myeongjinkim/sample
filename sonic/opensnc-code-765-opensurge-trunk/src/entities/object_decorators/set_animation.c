@@ -23,17 +23,17 @@
 #include "../../core/util.h"
 #include "../../core/stringutil.h"
 
-/* strategy pattern */
+/* strategy 패턴 */
 typedef struct objectdecorator_setanimationstrategy_t objectdecorator_setanimationstrategy_t;
-struct objectdecorator_setanimationstrategy_t { /* <<interface>> */
+struct objectdecorator_setanimationstrategy_t { /* 인터페이스 */
     void (*init)(objectmachine_t *o);
     void (*release)(objectmachine_t *o);
     void (*update)(objectmachine_t *o);
 };
 
-/* command: set_animation */
+/* set_animation 명령 */
 typedef struct objectdecorator_setanimationstrategy_anim_t objectdecorator_setanimationstrategy_anim_t;
-struct objectdecorator_setanimationstrategy_anim_t { /* implements objectdecorator_setanimationstrategy_t */
+struct objectdecorator_setanimationstrategy_anim_t { /* objectdecorator_setanimationstrategy_t를 구현 */
     objectdecorator_setanimationstrategy_t base;
     char *sprite_name;
     expression_t *animation_id;
@@ -43,9 +43,9 @@ static void objectdecorator_setanimationstrategy_anim_init(objectmachine_t *o);
 static void objectdecorator_setanimationstrategy_anim_release(objectmachine_t *o);
 static void objectdecorator_setanimationstrategy_anim_update(objectmachine_t *o);
 
-/* command: set_animation_frame */
+/* set_animation_frame 명령*/
 typedef struct objectdecorator_setanimationstrategy_frame_t objectdecorator_setanimationstrategy_frame_t;
-struct objectdecorator_setanimationstrategy_frame_t { /* implements objectdecorator_setanimationstrategy_t */
+struct objectdecorator_setanimationstrategy_frame_t { /* objectdecorator_setanimationstrategy_t를 구현 */
     objectdecorator_setanimationstrategy_t base;
     expression_t *animation_frame;
 };
@@ -54,9 +54,9 @@ static void objectdecorator_setanimationstrategy_frame_init(objectmachine_t *o);
 static void objectdecorator_setanimationstrategy_frame_release(objectmachine_t *o);
 static void objectdecorator_setanimationstrategy_frame_update(objectmachine_t *o);
 
-/* command: set_animation_speed_factor */
+/* set_animation_speed_factor 명령 */
 typedef struct objectdecorator_setanimationstrategy_speed_t objectdecorator_setanimationstrategy_speed_t;
-struct objectdecorator_setanimationstrategy_speed_t { /* implements objectdecorator_setanimationstrategy_t */
+struct objectdecorator_setanimationstrategy_speed_t { /* objectdecorator_setanimationstrategy_t 구현 */
     objectdecorator_setanimationstrategy_t base;
     expression_t *animation_speed;
 };
@@ -73,7 +73,7 @@ static void objectdecorator_setanimationstrategy_speed_update(objectmachine_t *o
 /* objectdecorator_setanimation_t class */
 typedef struct objectdecorator_setanimation_t objectdecorator_setanimation_t;
 struct objectdecorator_setanimation_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     objectdecorator_setanimationstrategy_t *strategy;
 };
 
@@ -161,11 +161,11 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 /* ------------------------------------------ */
 
 
-/* command: set_animation */
+/* set_animation 명령 */
 objectdecorator_setanimationstrategy_t* objectdecorator_setanimationstrategy_anim_new(const char *sprite_name, expression_t *animation_id)
 {
     objectdecorator_setanimationstrategy_anim_t *s = mallocx(sizeof *s); /* strategy */
-    objectdecorator_setanimationstrategy_t *p = (objectdecorator_setanimationstrategy_t*)s; /* parent class */
+    objectdecorator_setanimationstrategy_t *p = (objectdecorator_setanimationstrategy_t*)s; /* 부모 클래스 */
 
     p->init = objectdecorator_setanimationstrategy_anim_init;
     p->release = objectdecorator_setanimationstrategy_anim_release;
@@ -198,11 +198,11 @@ void objectdecorator_setanimationstrategy_anim_update(objectmachine_t *o)
 
 
 
-/* command: set_animation_frame */
+/* set_animation_frame 명령 */
 objectdecorator_setanimationstrategy_t* objectdecorator_setanimationstrategy_frame_new(expression_t *animation_frame)
 {
     objectdecorator_setanimationstrategy_frame_t *s = mallocx(sizeof *s); /* strategy */
-    objectdecorator_setanimationstrategy_t *p = (objectdecorator_setanimationstrategy_t*)s; /* parent class */
+    objectdecorator_setanimationstrategy_t *p = (objectdecorator_setanimationstrategy_t*)s; /* 부모 클래스 */
 
     p->init = objectdecorator_setanimationstrategy_frame_init;
     p->release = objectdecorator_setanimationstrategy_frame_release;
@@ -236,7 +236,7 @@ void objectdecorator_setanimationstrategy_frame_update(objectmachine_t *o)
 }
 
 
-/* command: set_animation_speed_factor */
+/* set_animation_speed_factor 명령 */
 objectdecorator_setanimationstrategy_t* objectdecorator_setanimationstrategy_speed_new(expression_t *animation_speed)
 {
     objectdecorator_setanimationstrategy_speed_t *s = mallocx(sizeof *s); /* strategy */
@@ -279,7 +279,7 @@ void objectdecorator_setanimationstrategy_speed_update(objectmachine_t *o)
 
 
 
-/* this method effectively changes the animation of the object */
+/* 효과적으로 객체의 animation을 변경하는 함수 */
 void change_the_animation(objectmachine_t *obj)
 {
     objectdecorator_setanimation_t *me = (objectdecorator_setanimation_t*)obj;
@@ -291,7 +291,7 @@ void change_the_animation(objectmachine_t *obj)
     actor_change_animation(object->actor, anim);
 }
 
-/* instantiates a decorator */
+/* decorator를 인스턴스화 */
 objectmachine_t* make_decorator(objectdecorator_setanimationstrategy_t *strategy, objectmachine_t *decorated_machine)
 {
     objectdecorator_setanimation_t *me = mallocx(sizeof *me);

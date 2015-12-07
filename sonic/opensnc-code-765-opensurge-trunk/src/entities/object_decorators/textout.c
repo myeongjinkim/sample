@@ -28,10 +28,10 @@
 typedef enum { TEXTOUT_LEFT, TEXTOUT_CENTRE, TEXTOUT_RIGHT } textoutstyle_t;
 
 
-/* objectdecorator_textout_t class */
+/* objectdecorator_textout_t 클래스 */
 typedef struct objectdecorator_textout_t objectdecorator_textout_t;
 struct objectdecorator_textout_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     textoutstyle_t style;
     font_t *fnt;
     char *text;
@@ -52,7 +52,7 @@ static int tagged_strlen(const char *s);
 
 /* public methods */
 
-/* class constructor */
+/* 클래스 생성자 */
 objectmachine_t* objectdecorator_textout_new(objectmachine_t *decorated_machine, const char *font_name, expression_t *xpos, expression_t *ypos, const char *text, expression_t *max_width, expression_t *index_of_first_char, expression_t *length)
 {
     return make_decorator(decorated_machine, TEXTOUT_LEFT, font_name, xpos, ypos, text, max_width, index_of_first_char, length);
@@ -112,23 +112,23 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     float wpx;
     v2d_t pos;
 
-    /* calculate the range of the string (no need to clip() it) */
+    /* 문자열의 범위를 계산한다 ( clip()할 필요가 없다 ) */
     start = (int)expression_evaluate(me->index_of_first_char);
     length = (int)expression_evaluate(me->length);
 
-    /* configuring the font */
+    /* 글꼴 구성 */
     font_use_substring(me->fnt, start, length);
     font_set_width(me->fnt, (int)expression_evaluate(me->max_width));
 
-    /* font text */
+    /* 글꼴 텍스트 */
     processed_text = nanocalc_interpolate_string(me->text, st);
     font_set_text(me->fnt, "%s", processed_text);
     free(processed_text);
 
     /* symbol table tricks */
-    symboltable_set(st, "$_STRLEN", tagged_strlen(font_get_text(me->fnt))); /* store the length of the text in $_STRLEN */
+    symboltable_set(st, "$_STRLEN", tagged_strlen(font_get_text(me->fnt))); /* $_STRLEN의 텍스트 길이를 저장한다. */
 
-    /* font position */
+    /* 글꼴 위치 */
     pos = v2d_new(expression_evaluate(me->xpos), expression_evaluate(me->ypos));
     wpx = font_get_textsize(me->fnt).x;
     switch(me->style) {
@@ -148,7 +148,7 @@ void render(objectmachine_t *obj, v2d_t camera_position)
     objectmachine_t *decorated_machine = dec->decorated_machine;
     objectdecorator_textout_t *me = (objectdecorator_textout_t*)obj;
 
-    /* render */
+    /* 생성 */
     font_render(me->fnt, camera_position);
 
     /* done! */

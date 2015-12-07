@@ -26,7 +26,7 @@
 /* objectdecorator_setplayerspeed_t class */
 typedef struct objectdecorator_setplayerspeed_t objectdecorator_setplayerspeed_t;
 struct objectdecorator_setplayerspeed_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t 에서 상속 */
     expression_t *speed;
     void (*strategy)(player_t*,expression_t*);
 };
@@ -72,7 +72,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, expression_t
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->speed = speed;
     me->strategy = strategy;
@@ -80,7 +80,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, expression_t
     return obj;
 }
 
-
+/* objectmachine_t 초기화 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -91,6 +91,7 @@ void init(objectmachine_t *obj)
     decorated_machine->init(decorated_machine);
 }
 
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -103,6 +104,7 @@ void release(objectmachine_t *obj)
     free(obj);
 }
 
+/* objectmachine_t 업데이트 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -115,6 +117,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
 
+/* objectmachine_t 업데이트에 대한 모습 생성 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -126,11 +129,12 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 }
 
 /* private strategies */
+/* xspeed 설정 */
 void set_xspeed(player_t *player, expression_t *speed)
 {
     player->actor->speed.x = expression_evaluate(speed);
 }
-
+/* yspeed 설정 */
 void set_yspeed(player_t *player, expression_t *speed)
 {
     player->actor->speed.y = expression_evaluate(speed);

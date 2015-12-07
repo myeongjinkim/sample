@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
- * loop.h - loop system
- * Copyright (C) 2011  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
+ * loop.h - loop object
+ * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +23,12 @@
 #include "../item.h"
 
 /* public methods */
-item_t* loopgreen_create();
-item_t* loopyellow_create();
+item_t* loopright_create();
+item_t* looptop_create();
+item_t* loopleft_create();
+item_t* loopnone_create();
+item_t* loopfloor_create();
+item_t* loopfloornone_create();
+item_t* loopfloortop_create();
 
 #endif

@@ -32,13 +32,13 @@
 
 
 /* constants */
-#define MAGIC_DIFF              -2  /* platform movement & collision detectors magic */
-#define SIDE_CORNERS_HEIGHT     0.5 /* height of the left/right sensors */
+#define MAGIC_DIFF              -2  /* 움직임 & 충돌을 감지하는 플랫폼*/
+#define SIDE_CORNERS_HEIGHT     0.5 /* Left/Right 센서 높이 */
 
 
 /* private data */
-static int floor_priority = TRUE; /* default behavior: priority(floor) > priority(wall) */
-static int slope_priority = TRUE; /* default behavior: priority(slope) > priority(floor) */
+static int floor_priority = TRUE; /* 기본 동작 : 중요도(floor) > 중요도(wall) */
+static int slope_priority = TRUE; /* 기본 동작 : 중요도(slope) > 중요도(floor) */
 static brick_t* brick_at(const brick_list_t *list, v2d_t spot);
 static int is_leftwall_disabled = FALSE;
 static int is_rightwall_disabled = FALSE;
@@ -55,7 +55,7 @@ static void calculate_rotated_boundingbox(const actor_t *act, v2d_t spot[4]);
 
 /*
  * actor_create()
- * Creates an actor
+ * 새로운 actor를 생성하는 함수
  */
 actor_t* actor_create()
 {
@@ -83,7 +83,7 @@ actor_t* actor_create()
 
 /*
  * actor_destroy()
- * Destroys an actor
+ * actor를 없애는 함수
  */
 void actor_destroy(actor_t *act)
 {
@@ -95,16 +95,16 @@ void actor_destroy(actor_t *act)
 
 /*
  * actor_render()
- * Default rendering function
+ * actor를 생성하는 함수
  */
 void actor_render(actor_t *act, v2d_t camera_position)
 {
     image_t *img;
 
     if(act->visible && act->animation) {
-        /* update animation */
+        /* 애니메이션을 업데이트 해준다. */
         if(!(act->synchronized_animation) || !(act->animation->repeat)) {
-            /* the animation isn't synchronized: every object updates its animation at its own pace */
+            /* 애니메이션이 동기화 되지 않다 : 모든 객체가 자신의 페이스에 그 애니메이션을 업데이트합니다. */
             act->animation_frame += (act->animation->fps * act->animation_speed_factor) * timer_get_delta();
             if((int)act->animation_frame >= act->animation->frame_count) {
                 if(act->animation->repeat)
@@ -114,12 +114,12 @@ void actor_render(actor_t *act, v2d_t camera_position)
             }
         }
         else {
-            /* the animation is synchronized: this only makes sense if the animation does repeat */
+            /* 애니메이션이 동기화 되다 : 오직 애니메이션이 반복될 경우에만 해당한다. */
             act->animation_frame = (act->animation->fps * act->animation_speed_factor) * (0.001f * timer_get_ticks());
             act->animation_frame = (((int)act->animation_frame % act->animation->frame_count) + act->animation->repeat_from) % act->animation->frame_count;
         }
 
-        /* render */
+        /* 생성 */
         img = actor_image(act);
         if(fabs(act->angle) > EPSILON)
            image_draw_rotated(img, video_get_backbuffer(), (int)(act->position.x-(camera_position.x-VIDEO_SCREEN_W/2)), (int)(act->position.y-(camera_position.y-VIDEO_SCREEN_H/2)), (int)act->hot_spot.x, (int)act->hot_spot.y, act->angle, act->mirror);
@@ -136,7 +136,7 @@ void actor_render(actor_t *act, v2d_t camera_position)
 
 /*
  * actor_render_repeat_xy()
- * Rendering / repeat xy
+ * actor를 생성한 후 x, y 좌표에 따라 반복한다.
  */
 void actor_render_repeat_xy(actor_t *act, v2d_t camera_position, int repeat_x, int repeat_y)
 {
@@ -148,7 +148,7 @@ void actor_render_repeat_xy(actor_t *act, v2d_t camera_position, int repeat_x, i
     final_pos.y = (int)act->position.y%(repeat_y?image_height(img):INT_MAX) - act->hot_spot.y-(camera_position.y-VIDEO_SCREEN_H/2) - (repeat_y?image_height(img):0);
 
     if(act->visible && act->animation) {
-        /* update animation */
+        /* 애니메이션 업데이트 */
         act->animation_frame += (act->animation->fps * act->animation_speed_factor) * timer_get_delta();
         if((int)act->animation_frame >= act->animation->frame_count) {
             if(act->animation->repeat)
@@ -157,7 +157,7 @@ void actor_render_repeat_xy(actor_t *act, v2d_t camera_position, int repeat_x, i
                 act->animation_frame = act->animation->frame_count-1;
         }
 
-        /* render */
+        /* 생성 */
         w = repeat_x ? (VIDEO_SCREEN_W/image_width(img) + 3) : 1;
         h = repeat_y ? (VIDEO_SCREEN_H/image_height(img) + 3) : 1;
         for(i=0; i<w; i++) {
@@ -170,7 +170,7 @@ void actor_render_repeat_xy(actor_t *act, v2d_t camera_position, int repeat_x, i
 
 /*
  * actor_collision()
- * Check collisions
+ * 충돌을 체크하는 함수
  */
 int actor_collision(const actor_t *a, const actor_t *b)
 {
@@ -211,13 +211,13 @@ int actor_collision(const actor_t *a, const actor_t *b)
 
 /*
  * actor_orientedbox_collision()
- * Is a colliding with b? (oriented bounding box detection)
+ * a가 b와 충돌하는가를 파악하는 함수 ( bounding box 감지 )
  */
 int actor_orientedbox_collision(const actor_t *a, const actor_t *b)
 {
     v2d_t a_pos, b_pos;
     v2d_t a_size, b_size;
-    v2d_t a_spot[4], b_spot[4]; /* rotated spots */
+    v2d_t a_spot[4], b_spot[4]; /* 회전 지점들 */
 
     calculate_rotated_boundingbox(a, a_spot);
     calculate_rotated_boundingbox(b, b_spot);
@@ -243,7 +243,7 @@ int actor_orientedbox_collision(const actor_t *a, const actor_t *b)
 
 /*
  * actor_pixelperfect_collision()
- * Is a colliding with b? (pixel perfect detection)
+ * a가 b와 충돌하는가를 파악하는 함수 ( 완벽한 픽셀 감지 )
  */
 int actor_pixelperfect_collision(const actor_t *a, const actor_t *b)
 {
@@ -265,8 +265,8 @@ int actor_pixelperfect_collision(const actor_t *a, const actor_t *b)
         if(actor_orientedbox_collision(a, b)) {
             image_t *image_a, *image_b;
             v2d_t size_a, size_b, pos_a, pos_b;
-            v2d_t a_spot[4], b_spot[4]; /* rotated spots */
-            v2d_t ac, bc; /* rotation spot */
+            v2d_t a_spot[4], b_spot[4]; /* 회전 지점들 */
+            v2d_t ac, bc; /* 회전하는 점 */
             int collided;
 
             calculate_rotated_boundingbox(a, a_spot);
@@ -307,7 +307,7 @@ int actor_pixelperfect_collision(const actor_t *a, const actor_t *b)
 
 /*
  * actor_brick_collision()
- * Actor collided with a brick?
+ * actor가 brick과 충돌했는지 확인하는 함수
  */
 int actor_brick_collision(actor_t *act, brick_t *brk)
 {
@@ -322,7 +322,7 @@ int actor_brick_collision(actor_t *act, brick_t *brk)
 
 /*
  * actor_change_animation()
- * Changes the animation of an actor
+ * actor의 애니메이션을 변경하는 함수
  */
 void actor_change_animation(actor_t *act, animation_t *anim)
 {
@@ -338,7 +338,7 @@ void actor_change_animation(actor_t *act, animation_t *anim)
 
 /*
  * actor_change_animation_frame()
- * Changes the animation frame
+ * 애니메이션 프레임을 변경하는 함수
  */
 void actor_change_animation_frame(actor_t *act, int frame)
 {
@@ -349,9 +349,8 @@ void actor_change_animation_frame(actor_t *act, int frame)
 
 /*
  * actor_change_animation_speed_factor()
- * Changes the speed factor of the current animation
- * The default factor is 1.0 (i.e., 100% of the original
- * animation speed)
+ * 현재 애니메이션의 속도 계수를 변경하는 함수.
+ * 기본 계수는 1.0이다. ( 즉, 원래 애니메이션 속도의 100% )
  */
 void actor_change_animation_speed_factor(actor_t *act, float factor)
 {
@@ -362,7 +361,8 @@ void actor_change_animation_speed_factor(actor_t *act, float factor)
 
 /*
  * actor_animation_finished()
- * Returns true if the current animation has finished
+ * 애니메이션이 완료되었는지 확인하는 함수
+ * 현재 애니메이션이 완료될 경우 true를 return해준다.
  */
 int actor_animation_finished(actor_t *act)
 {
@@ -374,7 +374,7 @@ int actor_animation_finished(actor_t *act)
 
 /*
  * actor_synchronize_animation()
- * should I use a shared animation frame?
+ * actor와 애니메이션을 동기화시켜주는 함수
  */
 void actor_synchronize_animation(actor_t *act, int sync)
 {
@@ -384,8 +384,7 @@ void actor_synchronize_animation(actor_t *act, int sync)
 
 /*
  * actor_image()
- * Returns the current image of the
- * animation of this actor
+ * actor의 애니메이션의 현재 이미지를 return 해주는 함수.
  */
 image_t* actor_image(const actor_t *act)
 {
@@ -393,13 +392,9 @@ image_t* actor_image(const actor_t *act)
 }
 
 
-
-
-
-
 /*
  * actor_sensors()
- * Get obstacle bricks around the actor
+ * actor 주위의 brick 장애물을 정보를 가져온다.
  */
 void actor_sensors(actor_t *act, brick_list_t *brick_list, brick_t **up, brick_t **upright, brick_t **right, brick_t **downright, brick_t **down, brick_t **downleft, brick_t **left, brick_t **upleft)
 {
@@ -409,7 +404,7 @@ void actor_sensors(actor_t *act, brick_list_t *brick_list, brick_t **up, brick_t
 
     v2d_t feet       = v2d_add(v2d_subtract(act->position, act->hot_spot), v2d_new(frame_width/2, frame_height));
     v2d_t vup        = v2d_add ( feet , v2d_rotate( v2d_new(0, -frame_height+diff), -act->angle) );
-    v2d_t vdown      = v2d_add ( feet , v2d_rotate( v2d_new(0, -diff), -act->angle) ); 
+    v2d_t vdown      = v2d_add ( feet , v2d_rotate( v2d_new(0, -diff), -act->angle) );
     v2d_t vleft      = v2d_add ( feet , v2d_rotate( v2d_new(-frame_width/2+diff, -frame_height*SIDE_CORNERS_HEIGHT), -act->angle) );
     v2d_t vright     = v2d_add ( feet , v2d_rotate( v2d_new(frame_width/2-diff, -frame_height*SIDE_CORNERS_HEIGHT), -act->angle) );
     v2d_t vupleft    = v2d_add ( feet , v2d_rotate( v2d_new(-frame_width/2+diff, -frame_height+diff), -act->angle) );
@@ -425,8 +420,8 @@ void actor_sensors(actor_t *act, brick_list_t *brick_list, brick_t **up, brick_t
 
 /*
  * actor_sensors_ex()
- * Like actor_sensors(), but this procedure allows to specify the
- * collision detectors positions'
+ * actor_sensors() 비슷한 함수
+ * 이 과정에서 충돌 감지기의 위치를 지정할 수 있다.
  */
 void actor_sensors_ex(actor_t *act, v2d_t vup, v2d_t vupright, v2d_t vright, v2d_t vdownright, v2d_t vdown, v2d_t vdownleft, v2d_t vleft, v2d_t vupleft, brick_list_t *brick_list, brick_t **up, brick_t **upright, brick_t **right, brick_t **downright, brick_t **down, brick_t **downleft, brick_t **left, brick_t **upleft)
 {
@@ -472,7 +467,7 @@ void actor_sensors_ex(actor_t *act, v2d_t vup, v2d_t vupright, v2d_t vright, v2d
 
 /*
  * actor_brick_at()
- * Gets a brick at a certain offset (may return NULL)
+ * 특정 오프셋에 brick을 가져온다. (아마 NULL을 return한다)
  */
 const brick_t* actor_brick_at(actor_t *act, const brick_list_t *brick_list, v2d_t offset)
 {
@@ -486,10 +481,9 @@ const brick_t* actor_brick_at(actor_t *act, const brick_list_t *brick_list, v2d_
 
 /* private stuff */
 
-/* brick_at(): given a list of bricks, returns
- * one that collides with the given spot
- * PS: this code ignores the bricks that are
- * not obstacles */
+/* brick_at(): bricks의 리스트가 주어지고, 주어진 장소와 충돌하였는지를 return해주는 함수
+ * PS: 이 코드는 장애물이 없는 bricks를 무시한다.
+ */
 static brick_t* brick_at(const brick_list_t *list, v2d_t spot)
 {
     const brick_list_t *p;
@@ -500,7 +494,7 @@ static brick_t* brick_at(const brick_list_t *list, v2d_t spot)
     /* main algorithm */
     for(p=list; p; p=p->next) {
 
-        /* I don't care about passable/disabled bricks. */
+        /* 지나갈 수 있거나 비활성화된 bricks는 신경쓰지 않는다. */
         if(p->data->brick_ref->property == BRK_NONE || !p->data->enabled)
             continue;
 
@@ -577,7 +571,7 @@ static brick_t* brick_at(const brick_list_t *list, v2d_t spot)
 
 /*
  * calculate_rotated_boundingbox()
- * Calculates the rotated bounding box of a given actor
+ * 주어진 actor의 회전하는 bounding box를 계산한다.
  */
 void calculate_rotated_boundingbox(const actor_t *act, v2d_t spot[4])
 {
@@ -601,4 +595,3 @@ void calculate_rotated_boundingbox(const actor_t *act, v2d_t spot[4])
     spot[2] = v2d_add(pos, v2d_rotate(c, angle));
     spot[3] = v2d_add(pos, v2d_rotate(d, angle));
 }
-

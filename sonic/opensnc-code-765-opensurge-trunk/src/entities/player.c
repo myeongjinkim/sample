@@ -51,7 +51,7 @@
 /*#define SHOW_SENSORS*/
 
 
-/* macros */
+/* 매크로 */
 #define ON_STATE(s) \
     if(p->pa_old_state != (s) && physicsactor_get_state(p->pa) == (s))
 
@@ -68,11 +68,11 @@
 }
 
 /* private data */
-#define PLAYER_MAX_BLINK            2.0  /* how many seconds does the player must blink if he/she gets hurt? */
-#define PLAYER_UNDERWATER_BREATH    30.0 /* how many seconds does the player can stay underwater before drowning? */
-static int collectibles, hundred_collectibles;         /* shared collectibles */
-static int lives;                        /* shared lives */
-static int score;                        /* shared score */
+#define PLAYER_MAX_BLINK            2.0  /* 그/그녀가 다치는 경우 player는 몇 초동안 깜빡거려야(blink) 하는가? */
+#define PLAYER_UNDERWATER_BREATH    30.0 /* player는 익사하기전에 수중에서 몇 초동안 머물수 있는가? */
+static int collectibles, hundred_collectibles;         /* collectibles 공유 */
+static int lives;                        /* lives(생명) 공유 */
+static int score;                        /* score 공유 */
 
 
 static void update_shield(player_t *p);
@@ -86,7 +86,7 @@ static int ignore_obstacle(int brick_angle, int old_loop_system_flags, bricklaye
 
 /*
  * player_create()
- * Creates a player
+ * 플레이어를 생성하는 함수
  */
 player_t *player_create(const char *character_name)
 {
@@ -96,7 +96,7 @@ player_t *player_create(const char *character_name)
 
     logfile_message("player_create(\"%s\")", character_name);
 
-    /* initializing... */
+    /* 초기화 */
     p->name = str_dup(character_name);
     p->actor = actor_create();
     p->disable_movement = FALSE;
@@ -110,7 +110,7 @@ player_t *player_create(const char *character_name)
     p->actor->input = input_create_user(NULL);
     CHANGE_ANIM(stopped);
 
-    /* auxiliary variables */
+    /* 보조 변수 */
     p->on_moveable_platform = FALSE;
     p->got_glasses = FALSE;
 
@@ -119,11 +119,11 @@ player_t *player_create(const char *character_name)
     p->blink_timer = 0.0f;
     p->blink_visibility_timer = 0.0f;
 
-    /* shield */
+    /* 방패 */
     p->shield = actor_create();
     p->shield_type = SH_NONE;
 
-    /* invincibility */
+    /* 무적 */
     p->invincible = FALSE;
     p->invtimer = 0;
     for(i=0; i<PLAYER_MAX_INVSTAR; i++) {
@@ -147,11 +147,11 @@ player_t *player_create(const char *character_name)
     p->pa = physicsactor_create(p->actor->position);
     p->pa_old_state = physicsactor_get_state(p->pa);
 
-    /* misc */
+    /* 기타 */
     p->underwater = FALSE;
     p->underwater_timer = 0.0f;
 
-    /* character system */
+    /* 캐릭터 system */
     if(str_icmp(c->companion_object_name, "") != 0) {
         object_t *companion = level_create_enemy(c->companion_object_name, v2d_new(0, 0));
         companion->created_from_editor = FALSE;
@@ -169,7 +169,7 @@ player_t *player_create(const char *character_name)
     physicsactor_set_rolluphillslp(p->pa, physicsactor_get_rolluphillslp(p->pa) * c->multiplier.rolluphillslp);
     physicsactor_set_rolldownhillslp(p->pa, physicsactor_get_rolldownhillslp(p->pa) * c->multiplier.rolldownhillslp);
 
-    /* success! */
+    /* 성공 */
     hundred_collectibles = collectibles = 0;
     logfile_message("player_create() ok");
     return p;
@@ -178,7 +178,7 @@ player_t *player_create(const char *character_name)
 
 /*
  * player_destroy()
- * Destroys a player
+ * player를 삭제하는 함수
  */
 player_t* player_destroy(player_t *player)
 {
@@ -200,7 +200,7 @@ player_t* player_destroy(player_t *player)
 
 /*
  * player_update()
- * Updates the player
+ * player를 업데이트하는 함수.
  */
 void player_update(player_t *player, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, enemy_list_t *enemy_list)
 {
@@ -208,7 +208,6 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
     actor_t *act = player->actor;
     float dt = timer_get_delta();
 
-    /* "gambiarra" */
     act->hot_spot = v2d_new(image_width(actor_image(act))/2, image_height(actor_image(act))-20);
 
     /* physics */
@@ -217,7 +216,7 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
         physics_adapter(player, team, team_size, brick_list, item_list, enemy_list);
     }
 
-    /* the player blinks */
+    /* player 깜빡거림 */
     if(player->blinking) {
         player->blink_timer += timer_get_delta();
 
@@ -238,17 +237,17 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
         player->blink_visibility_timer = 0.0f;
     }
 
-    /* shield */
+    /* 방패 */
     if(player->shield_type != SH_NONE)
         update_shield(player);
 
-    /* get underwater */
+    /* 수중에서 */
     if(!(player->underwater) && player->actor->position.y >= level_waterlevel())
         player_enter_water(player);
     else if(player->underwater && player->actor->position.y < level_waterlevel())
         player_leave_water(player);
 
-    /* underwater? */
+    /* 수중인지 확인 */
     if(player->underwater) {
         player->speedshoes_timer = max(player->speedshoes_timer, PLAYER_MAX_SPEEDSHOES); /* disable speed shoes */
 
@@ -261,7 +260,7 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
             player_drown(player);
     }
 
-    /* invincibility stars */
+    /* 무적의 별 */
     if(player->invincible) {
         int maxf = sprite_get_animation("SD_INVSTAR", 0)->frame_count;
         int invangle[PLAYER_MAX_INVSTAR];
@@ -307,16 +306,16 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
             player->speedshoes_timer += dt;
     }
 
-    /* animation */
+    /* 애니메이션 */
     update_animation(player);
 
-    /* is it a CPU controlled player? */
+    /* CPU가 제어하는 player인지 확인 */
     if(player != level_player()) {
         for(i=0; i<IB_MAX; i++)
             input_simulate_button_up(act->input, (inputbutton_t)i);
     }
 
-    /* winning pose */
+    /* 승리 포즈 */
     if(level_has_been_cleared())
         physicsactor_enable_winning_pose(player->pa);
 }
@@ -324,7 +323,7 @@ void player_update(player_t *player, player_t **team, int team_size, brick_list_
 
 /*
  * player_render()
- * Rendering function
+ * player를 생성하는 함수.
  */
 void player_render(player_t *player, v2d_t camera_position)
 {
@@ -334,13 +333,12 @@ void player_render(player_t *player, v2d_t camera_position)
     for(i=0;i<PLAYER_MAX_INVSTAR && player->invincible;i++)
         behind_player[i] = (int)((180*4) * timer_get_ticks()*0.001 + (i+1)*(360/PLAYER_MAX_INVSTAR)) % 360 >= 180;
 
-    /* invincibility stars I */
     for(i=0;i<PLAYER_MAX_INVSTAR && player->invincible;i++) {
         if(behind_player[i])
             actor_render(player->invstar[i], camera_position);
     }
 
-    /* render the player */
+    /* player를 생성 */
     switch(physicsactor_get_movmode(player->pa)) {
     case MM_FLOOR: act->position.y -= 1; break;
     case MM_LEFTWALL: act->position.x += 3; break;
@@ -359,18 +357,18 @@ void player_render(player_t *player, v2d_t camera_position)
     case MM_CEILING: act->position.y -= 3; break;
     }
 
-    /* render the shield */
+    /* 방패를 생성 */
     if(player->shield_type != SH_NONE)
         actor_render(player->shield, camera_position);
 
-    /* invincibility stars II */
+    /* 무적의 별 II */
     for(i=0;i<PLAYER_MAX_INVSTAR && player->invincible;i++) {
         if(!behind_player[i])
             actor_render(player->invstar[i], camera_position);
     }
 
 #ifdef SHOW_SENSORS
-    /* sensors */
+    /* 센서 */
     physicsactor_render_sensors(player->pa, camera_position);
 #endif
 }
@@ -379,7 +377,7 @@ void player_render(player_t *player, v2d_t camera_position)
 
 /*
  * player_bounce()
- * Rebound
+ * player의 반동을 제어하는 함수
  */
 void player_bounce(player_t *player, actor_t *hazard)
 {
@@ -406,8 +404,7 @@ void player_bounce(player_t *player, actor_t *hazard)
 
 /*
  * player_hit()
- * Hits a player. If it has no collectibles, then
- * it must die
+ * player가 공격한다. collectibles가 없다면 죽는다.
  */
 void player_hit(player_t *player, actor_t *hazard)
 {
@@ -435,7 +432,7 @@ void player_hit(player_t *player, actor_t *hazard)
             item_t *b;
             player_set_collectibles(0);
 
-            /* create collectibles */
+            /* collectibles 생성 */
             for(i=0; i<r; i++) {
                 b = level_create_item(IT_BOUNCINGRING, player->actor->position);
                 bouncingcollectible_set_speed(b, v2d_new(-sin(a*PI/180.0f)*spd*(1-2*(i%2)), cos(a*PI/180.0f)*spd));
@@ -460,7 +457,7 @@ void player_hit(player_t *player, actor_t *hazard)
 
 /*
  * player_kill()
- * Kills a player
+ * player를 죽이는 함수.
  */
 void player_kill(player_t *player)
 {
@@ -483,7 +480,7 @@ void player_kill(player_t *player)
 
 /*
  * player_roll()
- * Rolls
+ * player가 구르게 하는 함수.
  */
 void player_roll(player_t *player)
 {
@@ -493,7 +490,7 @@ void player_roll(player_t *player)
 
 /*
  * player_enable_roll()
- * disables player rolling
+ * player가 계속 구르게 하는 함수
  */
 void player_enable_roll(player_t *player)
 {
@@ -506,7 +503,7 @@ void player_enable_roll(player_t *player)
 
 /*
  * player_disable_roll()
- * disables player rolling
+ * player의 구르기를 멈추는 함수
  */
 void player_disable_roll(player_t *player)
 {
@@ -519,7 +516,7 @@ void player_disable_roll(player_t *player)
 
 /*
  * player_spring()
- * Springfy player
+ * player가 spring을 밟을때 사용되는 함수
  */
 void player_spring(player_t *player)
 {
@@ -529,8 +526,7 @@ void player_spring(player_t *player)
 
 /*
  * player_drown()
- * Drown (underwater). This will be
- * called automatically, internally.
+ * player가 익사(수중에서)할 때 사용하는 함수. 이것은 내부에서 자동으로 호출된다.
  */
 void player_drown(player_t *player)
 {
@@ -546,7 +542,7 @@ void player_drown(player_t *player)
 
 /*
  * player_breathe()
- * Breathe (air bubble, underwater)
+ * 호흡 (air bublle, 수중에서)
  */
 void player_breathe(player_t *player)
 {
@@ -562,7 +558,7 @@ void player_breathe(player_t *player)
 
 /*
  * player_enter_water()
- * Enters the water
+ * player가 물에 들어갈 때 호출되는 함수
  */
 void player_enter_water(player_t *player)
 {
@@ -591,7 +587,7 @@ void player_enter_water(player_t *player)
 
 /*
  * player_leave_water()
- * Leaves the water
+ * player가 물에서 나올 때 호출되는 함수
  */
 void player_leave_water(player_t *player)
 {
@@ -619,7 +615,7 @@ void player_leave_water(player_t *player)
 
 /*
  * player_is_underwater()
- * Is the player underwater?
+ * player가 수중에 있는지 확인하는 함수
  */
 int player_is_underwater(const player_t *player)
 {
@@ -630,7 +626,7 @@ int player_is_underwater(const player_t *player)
 
 /*
  * player_reset_underwater_timer()
- * Reset underwater timer
+ * 수중에 있는 시간을 reset하는 함수
  */
 void player_reset_underwater_timer(player_t *player)
 {
@@ -640,7 +636,7 @@ void player_reset_underwater_timer(player_t *player)
 
 /*
  * player_seconds_remaining_to_drown()
- * How many seconds to drown?
+ * 익사하는데 몇초가 걸리는지 알려주는 함수
  */
 float player_seconds_remaining_to_drown(const player_t *player)
 {
@@ -650,7 +646,7 @@ float player_seconds_remaining_to_drown(const player_t *player)
 
 /*
  * player_lock_horizontally_for()
- * Horizontal control lock timer
+ * 수평 제어 잠금 타이머
  */
 void player_lock_horizontally_for(player_t *player, float seconds)
 {
@@ -660,8 +656,8 @@ void player_lock_horizontally_for(player_t *player, float seconds)
 
 /*
  * player_is_attacking()
- * Returns TRUE if a given player is attacking;
- * FALSE otherwise
+ * player가 공격하면 TRUE를 return 하고
+ * 그렇지 앟으면 FALSE를 return 한다.
  */
 int player_is_attacking(const player_t *player)
 {
@@ -671,7 +667,7 @@ int player_is_attacking(const player_t *player)
 
 /*
  * player_is_rolling()
- * TRUE iff the player is rolling
+ * player가 구르는 중이면 TRUE
  */
 int player_is_rolling(const player_t *player)
 {
@@ -681,7 +677,7 @@ int player_is_rolling(const player_t *player)
 
 /*
  * player_is_getting_hit()
- * TRUE iff the player is getting hit
+ * player가 맞으면 TRUE
  */
 int player_is_getting_hit(const player_t *player)
 {
@@ -690,7 +686,7 @@ int player_is_getting_hit(const player_t *player)
 
 /*
  * player_is_dying()
- * TRUE iff the player is dying
+ * player가 죽으면 TRUE
  */
 int player_is_dying(const player_t *player)
 {
@@ -700,7 +696,7 @@ int player_is_dying(const player_t *player)
 
 /*
  * player_is_stopped()
- * TRUE iff the player is stopped
+ * player가 멈추면 TRUE
  */
 int player_is_stopped(const player_t *player)
 {
@@ -709,7 +705,7 @@ int player_is_stopped(const player_t *player)
 
 /*
  * player_is_walking()
- * TRUE iff the player is walking
+ * player가 걷고있으면 TRUE
  */
 int player_is_walking(const player_t *player)
 {
@@ -718,7 +714,7 @@ int player_is_walking(const player_t *player)
 
 /*
  * player_is_running()
- * TRUE iff the player is running
+ * player가 달리면 TRUE
  */
 int player_is_running(const player_t *player)
 {
@@ -727,7 +723,7 @@ int player_is_running(const player_t *player)
 
 /*
  * player_is_jumping()
- * TRUE iff the player is jumping
+ * player가 점프하면 TRUE
  */
 int player_is_jumping(const player_t *player)
 {
@@ -736,7 +732,7 @@ int player_is_jumping(const player_t *player)
 
 /*
  * player_is_springing()
- * TRUE iff the player is springing
+ * player가 스프링을 밟으면 TRUE
  */
 int player_is_springing(const player_t *player)
 {
@@ -745,7 +741,7 @@ int player_is_springing(const player_t *player)
 
 /*
  * player_is_pushing()
- * TRUE iff the player is pushing
+ * player가 (벽을)밀고 있으면 TRUE
  */
 int player_is_pushing(const player_t *player)
 {
@@ -754,7 +750,7 @@ int player_is_pushing(const player_t *player)
 
 /*
  * player_is_braking()
- * TRUE iff the player is braking
+ * player가 braking하면 TRUE
  */
 int player_is_braking(const player_t *player)
 {
@@ -763,7 +759,7 @@ int player_is_braking(const player_t *player)
 
 /*
  * player_is_at_ledge()
- * TRUE iff the player is at ledge
+ * player가 ledge에 있으면 TRUE
  */
 int player_is_at_ledge(const player_t *player)
 {
@@ -772,7 +768,7 @@ int player_is_at_ledge(const player_t *player)
 
 /*
  * player_is_drowning()
- * TRUE iff the player is drowning
+ * player가 익사하면 TRUE
  */
 int player_is_drowning(const player_t *player)
 {
@@ -781,7 +777,7 @@ int player_is_drowning(const player_t *player)
 
 /*
  * player_is_breathing()
- * TRUE iff the player is breathing an air bubble
+ * player가 air bubble로 숨쉬면 TRUE
  */
 int player_is_breathing(const player_t *player)
 {
@@ -790,7 +786,7 @@ int player_is_breathing(const player_t *player)
 
 /*
  * player_is_ducking()
- * TRUE iff the player is ducking
+ * player가 ducking하면 TRUE
  */
 int player_is_ducking(const player_t *player)
 {
@@ -799,7 +795,7 @@ int player_is_ducking(const player_t *player)
 
 /*
  * player_is_lookingup()
- * TRUE iff the player is looking up
+ * player가 위를 보면 TRUE
  */
 int player_is_lookingup(const player_t *player)
 {
@@ -808,7 +804,7 @@ int player_is_lookingup(const player_t *player)
 
 /*
  * player_is_waiting()
- * TRUE iff the player is waiting
+ * player가 기다리고 있으면 TRUE
  */
 int player_is_waiting(const player_t *player)
 {
@@ -817,29 +813,25 @@ int player_is_waiting(const player_t *player)
 
 /*
  * player_is_winning()
- * TRUE iff the player is winning
+ * player가 이기면 TRUE
  */
 int player_is_winning(const player_t *player)
 {
     return physicsactor_get_state(player->pa) == PAS_WINNING;
 }
 
-
-
-
 /*
  * player_is_in_the_air()
- * TRUE iff the player is in the air
+ * player가 공기중에 있으면 TRUE
  */
 int player_is_in_the_air(const player_t *player)
 {
     return physicsactor_is_in_the_air(player->pa);
 }
 
-
 /*
  * player_is_ultrafast()
- * TRUE if, and only if, the player is wearing speed shoes
+ * player가 speed shoes를 착용한 경우 TRUE
  */
 int player_is_ultrafast(const player_t* player)
 {
@@ -851,23 +843,9 @@ int player_is_invincible(const player_t* player)
     return player->invincible;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  * player_get_collectibles()
- * Returns the amount of collectibles
- * the player has got so far
+ * player가 지금까지 수집한 수집품의 수를 return해준다.
  */
 int player_get_collectibles()
 {
@@ -878,7 +856,7 @@ int player_get_collectibles()
 
 /*
  * player_set_collectibles()
- * Sets a new amount of collectibles
+ * 수집품의 새로운 양을 설정한다.
  */
 void player_set_collectibles(int c)
 {
@@ -896,7 +874,7 @@ void player_set_collectibles(int c)
 
 /*
  * player_get_lives()
- * How many lives does the player have?
+ * player의 생명 갯수를 return하는 함수
  */
 int player_get_lives()
 {
@@ -907,7 +885,7 @@ int player_get_lives()
 
 /*
  * player_set_lives()
- * Sets the number of lives
+ * player의 생명 갯수를 설정하는 함수
  */
 void player_set_lives(int l)
 {
@@ -918,7 +896,7 @@ void player_set_lives(int l)
 
 /*
  * player_get_score()
- * Returns the score
+ * 점수를 return해주는 함수
  */
 int player_get_score()
 {
@@ -929,7 +907,7 @@ int player_get_score()
 
 /*
  * player_set_score()
- * Sets the score
+ * 점수를 설정하는 함수
  */
 void player_set_score(int s)
 {
@@ -941,7 +919,7 @@ void player_set_score(int s)
 
 /* private functions */
 
-/* updates the position and the animation of the current shield */
+/* 위치와 현재의 shield 애니메이션을 업데이트한다. */
 void update_shield(player_t *p)
 {
     actor_t *sh = p->shield, *act = p->actor;
@@ -976,7 +954,7 @@ void update_shield(player_t *p)
     }
 }
 
-/* updates the animation of the player */
+/* player의 애니메이션을 업데이트한다. */
 void update_animation(player_t *p)
 {
     /* animations */
@@ -1021,14 +999,14 @@ void update_animation(player_t *p)
     p->actor->hot_spot = v2d_new(image_width(actor_image(p->actor))/2, image_height(actor_image(p->actor))-20);
 }
 
-/* the interface between player_t and physicsactor_t */
+/* player_t 와 physicsactor_t 사이의 interface*/
 void physics_adapter(player_t *player, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     actor_t *act = player->actor;
     physicsactor_t *pa = player->pa;
     obstaclemap_t *obstaclemap;
 
-    /* converting variables */
+    /* 변수들을 변환한다. */
     physicsactor_set_position(pa, act->position);
     if(physicsactor_is_in_the_air(pa) || player_is_getting_hit(player) || player_is_dying(player)) {
         physicsactor_set_xsp(pa, act->speed.x);
@@ -1051,7 +1029,7 @@ void physics_adapter(player_t *player, player_t **team, int team_size, brick_lis
     if(input_button_down(act->input, IB_FIRE1))
         physicsactor_jump(pa);
 
-    /* creating the obstacle map */
+    /* obstacle map 생성 */
     obstaclemap = obstaclemap_create();
     for(; brick_list; brick_list = brick_list->next) {
         if(brick_list->data->brick_ref->property != BRK_NONE && brick_list->data->enabled && brick_image(brick_list->data) != NULL && !ignore_obstacle(brick_list->data->brick_ref->angle, player->disable_wall, brick_list->data->layer, player->layer))
@@ -1066,10 +1044,10 @@ void physics_adapter(player_t *player, player_t **team, int team_size, brick_lis
             obstaclemap_add_obstacle(obstaclemap, object2obstacle(object_list->data));
     }
 
-    /* updating the physics actor */
+    /* physics actor 업데이트 */
     physicsactor_update(pa, obstaclemap);
 
-    /* destroying the obstacle map */
+    /* obstacle map 삭제 */
     obstaclemap = obstaclemap_destroy(obstaclemap);
 
     /* can't leave the screen */
@@ -1084,7 +1062,7 @@ void physics_adapter(player_t *player, player_t **team, int team_size, brick_lis
         physicsactor_set_gsp(pa, 0.0f);
     }
 
-    /* unconverting variables */
+    /* 변수 unconverting */
     act->position = physicsactor_get_position(pa);
     act->speed = physicsactor_is_in_the_air(pa) || player_is_getting_hit(player) || player_is_dying(player) ? v2d_new(physicsactor_get_xsp(pa), physicsactor_get_ysp(pa)) : v2d_new(physicsactor_get_gsp(pa), 0.0f);
 
@@ -1093,7 +1071,7 @@ void physics_adapter(player_t *player, player_t **team, int team_size, brick_lis
     act->angle = ((int)((256 - physicsactor_get_angle(pa)) * 1.40625f) % 360) * PI / 180.0f;
 }
 
-/* converts a brick to an obstacle */
+/* brick을 장애물로 변환 */
 obstacle_t* brick2obstacle(const brick_t *brick)
 {
     const image_t *image = collisionmask_image(brick_collisionmask(brick));
@@ -1104,7 +1082,7 @@ obstacle_t* brick2obstacle(const brick_t *brick)
     return (cloud ? obstacle_create_oneway : obstacle_create_solid)(image, angle, position);
 }
 
-/* converts a built-in item to an obstacle */
+/* built-in item을 장애물로 변환 */
 obstacle_t* item2obstacle(const item_t *item)
 {
     const image_t *image = actor_image(item->actor);
@@ -1114,7 +1092,7 @@ obstacle_t* item2obstacle(const item_t *item)
     return obstacle_create_solid(image, angle, position);
 }
 
-/* converts a custom object to an obstacle */
+/* custom object를 장애물로 변환 */
 obstacle_t* object2obstacle(const object_t *object)
 {
     const image_t *image = actor_image(object->actor);
@@ -1124,7 +1102,7 @@ obstacle_t* object2obstacle(const object_t *object)
     return obstacle_create_solid(image, angle, position);
 }
 
-/* ignore the obstacle? */
+/* 장애물을 무시할 수 있는지 확인 */
 int ignore_obstacle(int brick_angle, int old_loop_system_flags, bricklayer_t brick_layer, bricklayer_t player_layer)
 {
     int f = old_loop_system_flags, a = brick_angle % 360;

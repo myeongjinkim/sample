@@ -44,13 +44,13 @@ static particle_list_t *particle_list = NULL;
 
 
 
-/* initializes the particle system */
+/* particle 시스템을 초기화하는 함수 */
 void particle_init()
 {
     particle_list = NULL;
 }
 
-/* releases the particle system */
+/* particle 시스템을 해제하는 함수 */
 void particle_release()
 {
     particle_list_t *it, *next;
@@ -68,7 +68,7 @@ void particle_release()
     particle_list = NULL;
 }
 
-/* adds a new particle to the system. Warning: image will be free'd internally. */
+/* 시스템에 새로운 particle을 추가한다. 경고 : 이미지는 내부적으로 해제된다. */
 void particle_add(struct image_t *image, v2d_t position, v2d_t speed, int destroy_on_brick)
 {
     particle_t *p;
@@ -86,7 +86,7 @@ void particle_add(struct image_t *image, v2d_t position, v2d_t speed, int destro
     particle_list = node;
 }
 
-/* updates all the particles */
+/* 모든 paritcle들을 업데이트하는 함수. */
 void particle_update_all(const struct brick_list_t* brick_list)
 {
     float dt = timer_get_delta(), g = level_gravity();
@@ -136,7 +136,7 @@ void particle_update_all(const struct brick_list_t* brick_list)
     }
 }
 
-/* renders the particles */
+/* particle을 생성하는 함수. */
 void particle_render_all(v2d_t camera_position)
 {
     particle_list_t *it;
@@ -148,4 +148,3 @@ void particle_render_all(v2d_t camera_position)
         image_draw(p->image, video_get_backbuffer(), (int)(p->position.x-topleft.x), (int)(p->position.y-topleft.y), IF_NONE);
     }
 }
-

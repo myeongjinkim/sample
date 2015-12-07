@@ -39,58 +39,58 @@ typedef struct bgstrategy_default_t bgstrategy_default_t;
 typedef struct bgstrategy_circular_t bgstrategy_circular_t;
 typedef struct bgstrategy_linear_t bgstrategy_linear_t;
 
-/* === bgtheme struct (an ordered set of backgrounds) === */
+/* === 배경테마 구조체 (정렬된 배경 세트) === */
 struct bgtheme_t {
-    background_t **data; /* array of background_t* */
-    int length; /* length of the data vector */
+    background_t **data; /* background_t* 배열 */
+    int length; /* data vector의 길이 */
 };
 
 /* === <<abstract>> bgstrategy_t === */
 struct bgstrategy_t {
-    background_t *background; /* the background instance we're linked to */
-    void (*update)(bgstrategy_t*); /* update function */
+    background_t *background; /* 우리가 연결한 배경 인스턴스 */
+    void (*update)(bgstrategy_t*); /* 업데이트 함수 */
 };
-static bgstrategy_t *bgstrategy_delete(bgstrategy_t *strategy); /* class destructor */
+static bgstrategy_t *bgstrategy_delete(bgstrategy_t *strategy); /* class 소멸자 */
 
 
-/* === background struct === */
+/* === 배경 구조체 === */
 struct background_t {
     actor_t *actor; /* actor */
-    spriteinfo_t *data; /* this is not stored in the main hash */
+    spriteinfo_t *data; /* 메인 해시에 저장되어 있지 않다. */
     int repeat_x, repeat_y; /* repeat background? */
     float zindex; /* 0.0 (far) <= zindex <= 1.0 (near) */
-    bgstrategy_t *strategy; /* Strategy design pattern */
+    bgstrategy_t *strategy; /* 전략 디자인 패턴 */
 };
-static background_t *background_new(); /* constructor */
-static background_t *background_delete(background_t *bg); /* destructor */
+static background_t *background_new(); /* 생성자 */
+static background_t *background_delete(background_t *bg); /* 소멸자 */
 
 
-/* === concrete strategies (background behaviors) === */
+/* === 구체적인 전략 (background 행동) === */
 
-/* default background strategy */
+/* 기본 배경 전략 */
 struct bgstrategy_default_t {
-    bgstrategy_t base; /* inherits from bgstrategy_t */
+    bgstrategy_t base; /* bgstrategy_t 에서 상속된 기본 클래스*/
 };
-static bgstrategy_t *bgstrategy_default_new(background_t *background); /* class constructor */
+static bgstrategy_t *bgstrategy_default_new(background_t *background); /* 클래스 생성자 */
 static void bgstrategy_default_update(bgstrategy_t *strategy); /* private class method*/
 
-/* circular background strategy (elliptical trajectory) */
+/* 원형 배경 전략 (타원형 궤도) */
 struct bgstrategy_circular_t {
-    bgstrategy_t base; /* base class */
+    bgstrategy_t base; /* 기본 클래스 */
     float timer;
     float amplitude_x, amplitude_y;
     float angularspeed_x, angularspeed_y;
     float initialphase_x, initialphase_y;
 };
-static bgstrategy_t *bgstrategy_circular_new(background_t *background, float amplitude_x, float amplitude_y, float angularspeed_x, float angularspeed_y, float initialphase_x, float initialphase_y); /* class constructor */
+static bgstrategy_t *bgstrategy_circular_new(background_t *background, float amplitude_x, float amplitude_y, float angularspeed_x, float angularspeed_y, float initialphase_x, float initialphase_y); /* 클래스 생성자 */
 static void bgstrategy_circular_update(bgstrategy_t *strategy); /* private class method */
 
-/* linear background strategy */
+/* 선형 배경 전략 */
 struct bgstrategy_linear_t {
-    bgstrategy_t base; /* base class */
+    bgstrategy_t base; /* 기본 클래스 */
     float speed_x, speed_y;
 };
-static bgstrategy_t *bgstrategy_linear_new(background_t *background, float speed_x, float speed_y); /* class constructor */
+static bgstrategy_t *bgstrategy_linear_new(background_t *background, float speed_x, float speed_y); /* 클래스 생성자 */
 static void bgstrategy_linear_update(bgstrategy_t *strategy); /* private class method */
 
 
@@ -107,7 +107,7 @@ static void validate_background(const background_t *bg);
 
 /*
  * background_load()
- * Loads a background theme from a .bg file
+ * .bg 파일으로부터 배경/전경(앞의 경치) 테마를 불러오는 함수
  */
 bgtheme_t* background_load(const char *file)
 {
@@ -134,7 +134,7 @@ bgtheme_t* background_load(const char *file)
 
 /*
  * background_unload()
- * Unloads a background theme
+ * 배경 테마를 언로드하는 함수
  */
 bgtheme_t* background_unload(bgtheme_t *bgtheme)
 {
@@ -157,7 +157,7 @@ bgtheme_t* background_unload(bgtheme_t *bgtheme)
 
 /*
  * background_update()
- * Updates the background
+ * 배경을 업데이트하는 함수
  */
 void background_update(bgtheme_t *bgtheme)
 {
@@ -174,7 +174,7 @@ void background_update(bgtheme_t *bgtheme)
 
 /*
  * background_render_bg()
- * Renders the background
+ * 배경을 생성하는 함수
  */
 void background_render_bg(bgtheme_t *bgtheme, v2d_t camera_position)
 {
@@ -183,7 +183,7 @@ void background_render_bg(bgtheme_t *bgtheme, v2d_t camera_position)
 
 /*
  * background_render_fg()
- * Renders the foreground
+ * 전경(앞의 경치)을 생성하는 함수
  */
 void background_render_fg(bgtheme_t *bgtheme, v2d_t camera_position)
 {
@@ -328,7 +328,7 @@ void render(bgtheme_t *bgtheme, v2d_t camera_position, int foreground)
 
 void sort_backgrounds(bgtheme_t *bgtheme)
 {
-    /* merge_sort is a stable sorting algorithm. stdlib's qsort may not be. */
+    /* merge_sort는 안정적인 sorting 알고리즘이다. stdlib의 qsort가 되지 않을 수 있다. */
     merge_sort(bgtheme->data, bgtheme->length, sizeof *(bgtheme->data), sort_cmp);
 }
 
@@ -490,4 +490,3 @@ void validate_background(const background_t *bg)
     if(bg->strategy == NULL)
         fatal_error("Can't read background: no behavior given");
 }
-

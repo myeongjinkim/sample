@@ -28,8 +28,8 @@
 /* objectdecorator_simulatebutton_t class */
 typedef struct objectdecorator_simulatebutton_t objectdecorator_simulatebutton_t;
 struct objectdecorator_simulatebutton_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    inputbutton_t button; /* button to be simulated */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    inputbutton_t button; /* button을 시뮬레이션 할 수 있다. */
     void (*callback)(input_t*,inputbutton_t); /* strategy */
 };
 
@@ -45,7 +45,7 @@ static objectmachine_t* make_decorator(objectmachine_t *decorated_machine, const
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_simulatebuttondown_new(objectmachine_t *decorated_machine, const char *button_name)
 {
     return make_decorator(decorated_machine, button_name, input_simulate_button_down);
@@ -66,7 +66,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, const char *
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->callback = callback;
     me->button = IB_UP;
@@ -134,7 +134,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     object_t *object = obj->get_object_instance(obj);
     player_t *player = enemy_get_observed_player(object);
 
-    input_restore(player->actor->input); /* so that non-active players will respond to this command */
+    input_restore(player->actor->input); /* 비활성화된 player는 이 명령에 응답한다. */
     me->callback(player->actor->input, me->button);
 
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
@@ -149,4 +149,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

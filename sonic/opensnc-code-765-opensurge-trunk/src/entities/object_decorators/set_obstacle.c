@@ -28,9 +28,9 @@
 /* objectdecorator_setobstacle_t class */
 typedef struct objectdecorator_setobstacle_t objectdecorator_setobstacle_t;
 struct objectdecorator_setobstacle_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    int is_obstacle; /* should the object be an obstacle brick or not? */
-    expression_t *angle; /* if this is an obstacle, what is my angle a, 0 <= a < 360? */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    int is_obstacle; /* 객체가 장애물 brick이거나 아닌가를 확인해주는 변수 */
+    expression_t *angle; /* 장애물인 경우, 각도 a 몇인가를 확인해주는 변수(0 <= a < 360) */
 };
 
 /* private methods */
@@ -45,7 +45,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setobstacle_new(objectmachine_t *decorated_machine, int is_obstacle, expression_t *angle)
 {
     objectdecorator_setobstacle_t *me = mallocx(sizeof *me);
@@ -56,7 +56,7 @@ objectmachine_t* objectdecorator_setobstacle_new(objectmachine_t *decorated_mach
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->is_obstacle = is_obstacle;
     me->angle = angle;
@@ -114,4 +114,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

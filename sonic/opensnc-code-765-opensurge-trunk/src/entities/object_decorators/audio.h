@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * Audio.h - Audio commands
- * Copyright (C) 2010, 2011  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
+ * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +21,10 @@
 #define _OD_AUDIO_H
 
 #include "base/objectdecorator.h"
-#include "../../core/nanocalc/nanocalc.h"
 
-objectmachine_t* objectdecorator_playsample_new(objectmachine_t *decorated_machine, const char *sample_name, expression_t *vol, expression_t *pan, expression_t *freq, expression_t *loop);
-objectmachine_t* objectdecorator_playmusic_new(objectmachine_t *decorated_machine, const char *music_name, expression_t *loop);
+objectmachine_t* objectdecorator_playsample_new(objectmachine_t *decorated_machine, const char *sample_name, float vol, float pan, float freq, int loop);
+objectmachine_t* objectdecorator_playmusic_new(objectmachine_t *decorated_machine, const char *music_name, int loop);
 objectmachine_t* objectdecorator_playlevelmusic_new(objectmachine_t *decorated_machine);
-objectmachine_t* objectdecorator_setmusicvolume_new(objectmachine_t *decorated_machine, expression_t *vol);
-objectmachine_t* objectdecorator_stopsample_new(objectmachine_t *decorated_machine, const char *sample_name);
+objectmachine_t* objectdecorator_setmusicvolume_new(objectmachine_t *decorated_machine, float vol);
 
 #endif
-

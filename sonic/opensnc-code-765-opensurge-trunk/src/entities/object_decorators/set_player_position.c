@@ -42,7 +42,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setplayerposition_new(objectmachine_t *decorated_machine, expression_t *xpos, expression_t *ypos)
 {
     objectdecorator_setplayerposition_t *me = mallocx(sizeof *me);

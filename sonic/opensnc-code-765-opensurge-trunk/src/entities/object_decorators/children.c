@@ -1,23 +1,3 @@
-/*
- * Open Surge Engine
- * children.c - This decorator makes the object create/manipulate other objects
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include "children.h"
 #include "../object_vm.h"
@@ -29,11 +9,11 @@
 typedef struct objectdecorator_children_t objectdecorator_children_t;
 typedef void (*childrenstrategy_t)(objectdecorator_children_t*,player_t**,int,brick_list_t*,item_list_t*,object_list_t*);
 
-/* objectdecorator_children_t class */
+/* objectdecorator_children_t 클래스 */
 struct objectdecorator_children_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    char *object_name; /* I'll create an object called object_name... */
-    expression_t *offset_x, *offset_y; /* ...at this offset */
+    objectdecorator_t base; /* objectdecorator_t에 상속 */
+    char *object_name; /*  OBJECT_NAME라는 개체를 생성 */
+    expression_t *offset_x, *offset_y; /* x축, y축 상쇄 */
     char *child_name; /* child name */
     char *new_state_name; /* new state name */
     childrenstrategy_t strategy; /* strategy pattern */
@@ -97,6 +77,7 @@ objectmachine_t *make_decorator(objectmachine_t *decorated_machine, childrenstra
 
 
 /* private methods */
+/* objectmachine_t 상속 받아서 생성 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -106,7 +87,7 @@ void init(objectmachine_t *obj)
 
     decorated_machine->init(decorated_machine);
 }
-
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_children_t *me = (objectdecorator_children_t*)obj;
@@ -131,7 +112,7 @@ void release(objectmachine_t *obj)
     decorated_machine->release(decorated_machine);
     free(obj);
 }
-
+/* objectmachine_t  변화 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_children_t *me = (objectdecorator_children_t*)obj;
@@ -142,7 +123,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
 
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
-
+/*  변화에 대한 모습 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -161,7 +142,7 @@ void createchild_strategy(objectdecorator_children_t *me, player_t **team, int t
     object_t *object = obj->get_object_instance(obj);
     object_t *child;
     v2d_t offset;
-
+    /* 상쇄 식 */
     offset.x = expression_evaluate(me->offset_x);
     offset.y = expression_evaluate(me->offset_y);
     child = level_create_enemy(me->object_name, v2d_add(object->actor->position, offset));
@@ -199,4 +180,3 @@ void changeparentstate_strategy(objectdecorator_children_t *me, player_t **team,
         nanocalcext_set_target_object(object, brick_list, item_list, object_list); /* restore nanocalc's target object */
     }
 }
-

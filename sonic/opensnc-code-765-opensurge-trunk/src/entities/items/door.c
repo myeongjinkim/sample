@@ -1,23 +1,3 @@
-/*
- * Open Surge Engine
- * door.c - door
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include "door.h"
 #include "../../core/util.h"
@@ -25,12 +5,9 @@
 #include "../../core/timer.h"
 #include "../../core/soundfactory.h"
 #include "../player.h"
-#include "../brick.h"
-#include "../item.h"
 #include "../enemy.h"
-#include "../actor.h"
 
-/* door class */
+/* door 클래스 */
 typedef struct door_t door_t;
 struct door_t {
     item_t item; /* base class */
@@ -44,7 +21,7 @@ static void door_render(item_t* item, v2d_t camera_position);
 
 
 
-/* public methods */
+/* 문 생성, 할당 */
 item_t* door_create()
 {
     item_t *item = mallocx(sizeof(door_t));
@@ -56,14 +33,14 @@ item_t* door_create()
 
     return item;
 }
-
+/* 문이 열릴때의 효과음 */
 void door_open(item_t *door)
 {
     door_t *me = (door_t*)door;
     me->is_closed = FALSE;
     sound_play( soundfactory_get("open door") );
 }
-
+/* 문이 닫힐때의 효과음 */
 void door_close(item_t *door)
 {
     door_t *me = (door_t*)door;
@@ -72,12 +49,11 @@ void door_close(item_t *door)
 }
 
 
-/* private methods */
+/* 문의 객체 생성 */
 void door_init(item_t *item)
 {
     door_t *me = (door_t*)item;
 
-    item->always_active = TRUE;
     item->obstacle = TRUE;
     item->bring_to_back = TRUE;
     item->preserve = TRUE;
@@ -88,14 +64,14 @@ void door_init(item_t *item)
 }
 
 
-
+/* 문의 파괴 상태 */
 void door_release(item_t* item)
 {
     actor_destroy(item->actor);
 }
 
 
-
+/* 문의 모습, 상태 */
 void door_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list)
 {
     door_t *me = (door_t*)item;
@@ -105,13 +81,12 @@ void door_update(item_t* item, player_t** team, int team_size, brick_list_t* bri
 
     if(me->is_closed)
         act->position.y = min(act->position.y + speed*dt, act->spawn_point.y);
-    else    
-        act->position.y = max(act->position.y - speed*dt, act->spawn_point.y - image_height(actor_image(act)) * 0.8);
+    else
+        act->position.y = max(act->position.y - speed*dt, act->spawn_point.y - actor_image(act)->h * 0.8);
 }
 
-
+/* 문의 캐릭터 모습 */
 void door_render(item_t* item, v2d_t camera_position)
 {
     actor_render(item->actor, camera_position);
 }
-

@@ -1,23 +1,3 @@
-/*
- * Open Surge Engine
- * gravity.c - This decorator makes the object capable of being affected by gravity
- * Copyright (C) 2010, 2011  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include "gravity.h"
 #include "../../core/util.h"
@@ -25,10 +5,10 @@
 #include "../../core/video.h"
 #include "../../scenes/level.h"
 
-/* objectdecorator_gravity_t class */
+/* objectdecorator_gravity_t 클래스 */
 typedef struct objectdecorator_gravity_t objectdecorator_gravity_t;
 struct objectdecorator_gravity_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에 상속 */
 };
 
 /* private methods */
@@ -44,6 +24,7 @@ static int sticky_test(const actor_t *act, const brick_list_t *brick_list);
 /* public methods */
 
 /* class constructor */
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_gravity_new(objectmachine_t *decorated_machine)
 {
     objectdecorator_gravity_t *me = mallocx(sizeof *me);
@@ -64,6 +45,7 @@ objectmachine_t* objectdecorator_gravity_new(objectmachine_t *decorated_machine)
 
 
 /* private methods */
+/* objectmachine_t 상속 받아서 생성 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -73,7 +55,7 @@ void init(objectmachine_t *obj)
 
     decorated_machine->init(decorated_machine);
 }
-
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -84,7 +66,7 @@ void release(objectmachine_t *obj)
     decorated_machine->release(decorated_machine);
     free(obj);
 }
-
+/* objectmachine_t  변화 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -95,8 +77,8 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
 
     /* --------------------------- */
 
-    /* in order to avoid too much processor load,
-       we adopt this simplified platform system */
+    /*  프로세서 부하를 피하기 위해,
+          이 단순화 된 플랫폼 시스템을 채택 */
     int rx, ry, rw, rh, bx, by, bw, bh, j;
     const image_t *ri, *bi;
     brick_list_t *it;
@@ -109,7 +91,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     rw = image_width(ri);
     rh = image_height(ri);
 
-    /* check for collisions */
+    /* 충돌 체크 */
     for(it = brick_list; it != NULL && collided == NONE; it = it->next) {
         if(it->data->brick_ref->property != BRK_NONE) {
             bi = it->data->brick_ref->image;
@@ -142,7 +124,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
         }
     }
 
-    /* collided & gravity */
+    /* 충돌과 중력 */
     switch(collided) {
         case FLOOR:
             if(act->speed.y > 0.0f)
@@ -159,10 +141,10 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
             break;
     }
 
-    /* move */
+    /* 움직임 */
     act->position.y += act->speed.y * dt;
 
-    /* sticky physics */
+    /* 물리학 */
     if(!sticky_test(act, brick_list)) {
         for(i=sticky_max_offset; i>0; i--) {
             act->position.y += i;
@@ -179,7 +161,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
 
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
-
+/*  변화에 대한 모습 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -193,7 +175,7 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
 
 
-/* (x,y) collides with the brick */
+/* (x,y) 벽돌과 충돌 */
 int hit_test(int x, int y, const image_t *brk_image, int brk_x, int brk_y)
 {
     if(x >= brk_x && x < brk_x + image_width(brk_image) && y >= brk_y && y < brk_y + image_height(brk_image))
@@ -202,7 +184,7 @@ int hit_test(int x, int y, const image_t *brk_image, int brk_x, int brk_y)
     return FALSE;
 }
 
-/* act collides with some brick? */
+/* 벽돌과 충돌함으로 인한 행동 */
 int sticky_test(const actor_t *act, const brick_list_t *brick_list)
 {
     const brick_list_t *it;

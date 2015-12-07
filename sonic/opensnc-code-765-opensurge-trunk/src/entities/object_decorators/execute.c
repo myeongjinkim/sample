@@ -1,23 +1,3 @@
-/*
- * Open Surge Engine
- * execute.c - Executes some state immediately
- * Copyright (C) 2012  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include <math.h>
 #include "execute.h"
@@ -25,17 +5,18 @@
 #include "../../core/util.h"
 #include "../../core/stringutil.h"
 
-/* objectdecorator_executebase_t class */
+/* objectdecorator_executebase_t 클래스 */
 typedef struct objectdecorator_executebase_t objectdecorator_executebase_t;
 struct objectdecorator_executebase_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    char *state_name; /* state to be called */
+    objectdecorator_t base; /* objectdecorator_t에 상속 */
+    char *state_name; /* 상태 호출 */
     void (*update)(objectdecorator_executebase_t*,object_t*,player_t**,int,brick_list_t*,item_list_t*,object_list_t*); /* abstract method */
     void (*render)(objectdecorator_executebase_t*,object_t*,v2d_t);
     void (*destructor)(objectdecorator_executebase_t*); /* abstract method */
 };
 
 /* derived classes */
+/* 구조체 */
 typedef struct objectdecorator_execute_t objectdecorator_execute_t;
 struct objectdecorator_execute_t {
     objectdecorator_executebase_t base;
@@ -89,6 +70,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 
 /* public methods */
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_execute_new(objectmachine_t *decorated_machine, const char *state_name)
 {
     objectdecorator_execute_t *me = mallocx(sizeof *me);
@@ -111,6 +93,7 @@ objectmachine_t* objectdecorator_execute_new(objectmachine_t *decorated_machine,
     return obj;
 }
 
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_executeif_new(objectmachine_t *decorated_machine, const char *state_name, expression_t* condition)
 {
     objectdecorator_executeif_t *me = mallocx(sizeof *me);
@@ -134,6 +117,7 @@ objectmachine_t* objectdecorator_executeif_new(objectmachine_t *decorated_machin
     return obj;
 }
 
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_executeunless_new(objectmachine_t *decorated_machine, const char *state_name, expression_t* condition)
 {
     objectdecorator_executeunless_t *me = mallocx(sizeof *me);
@@ -157,6 +141,7 @@ objectmachine_t* objectdecorator_executeunless_new(objectmachine_t *decorated_ma
     return obj;
 }
 
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_executewhile_new(objectmachine_t *decorated_machine, const char *state_name, expression_t* condition)
 {
     objectdecorator_executewhile_t *me = mallocx(sizeof *me);
@@ -180,6 +165,7 @@ objectmachine_t* objectdecorator_executewhile_new(objectmachine_t *decorated_mac
     return obj;
 }
 
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_executefor_new(objectmachine_t *decorated_machine, const char *state_name, expression_t* initial, expression_t* condition, expression_t* iteration)
 {
     objectdecorator_executefor_t *me = mallocx(sizeof *me);
@@ -207,6 +193,7 @@ objectmachine_t* objectdecorator_executefor_new(objectmachine_t *decorated_machi
 
 
 /* private methods */
+/* objectmachine_t 상속 받아서 생성 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -216,7 +203,7 @@ void init(objectmachine_t *obj)
 
     decorated_machine->init(decorated_machine);
 }
-
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_executebase_t *me = (objectdecorator_executebase_t*)obj;
@@ -229,7 +216,7 @@ void release(objectmachine_t *obj)
     decorated_machine->release(decorated_machine);
     free(obj);
 }
-
+/* objectmachine_t  변화 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_executebase_t *me = (objectdecorator_executebase_t*)obj;
@@ -242,6 +229,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
 
+/*  변화에 대한 모습 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_executebase_t *me = (objectdecorator_executebase_t*)obj;

@@ -27,7 +27,7 @@
 /* objectdecorator_restartlevel_t class */
 typedef struct objectdecorator_restartlevel_t objectdecorator_restartlevel_t;
 struct objectdecorator_restartlevel_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
 };
 
 /* private methods */
@@ -42,7 +42,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_restartlevel_new(objectmachine_t *decorated_machine)
 {
     objectdecorator_restartlevel_t *me = mallocx(sizeof *me);
@@ -53,7 +53,7 @@ objectmachine_t* objectdecorator_restartlevel_new(objectmachine_t *decorated_mac
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     return obj;
@@ -87,12 +87,12 @@ void release(objectmachine_t *obj)
 
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
-    /*objectdecorator_t *dec = (objectdecorator_t*)obj;
-    objectmachine_t *decorated_machine = dec->decorated_machine;*/
+    objectdecorator_t *dec = (objectdecorator_t*)obj;
+    objectmachine_t *decorated_machine = dec->decorated_machine;
 
     level_restart();
 
-    /*decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);*/
+    decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list); // objectmachine_t의 update를 호출한다.
 }
 
 void render(objectmachine_t *obj, v2d_t camera_position)
@@ -104,4 +104,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

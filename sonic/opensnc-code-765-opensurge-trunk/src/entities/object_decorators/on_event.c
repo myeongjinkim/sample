@@ -34,7 +34,7 @@
 #include "../../scenes/level.h"
 #include "../player.h"
 
-/* forward declarations */
+/* forward 선언 */
 typedef struct objectdecorator_onevent_t objectdecorator_onevent_t;
 typedef struct eventstrategy_t eventstrategy_t;
 typedef struct onalways_t onalways_t;
@@ -61,60 +61,60 @@ typedef struct onmusicplay_t onmusicplay_t;
 
 /* objectdecorator_onevent_t class */
 struct objectdecorator_onevent_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    char *new_state_name; /* state name */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    char *new_state_name; /* 상태 이름 */
     eventstrategy_t *strategy; /* strategy pattern */
 };
 
 /* <<interface>> eventstrategy_t */
 struct eventstrategy_t {
-    void (*init)(eventstrategy_t*); /* initializes the strategy object */
-    void (*release)(eventstrategy_t*); /* releases the strategy object */
+    void (*init)(eventstrategy_t*); /* strategy object 초기화 */
+    void (*release)(eventstrategy_t*); /* strategy object 해제 */
     int (*should_trigger_event)(eventstrategy_t*,object_t*,player_t**,int,brick_list_t*,item_list_t*,object_list_t*); /* returns TRUE iff the event should be triggered */
 };
 
-/* onalways_t concrete strategy */
+/* onalways_t의 구체적인 strategy */
 struct onalways_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onalways_new();
 static void onalways_init(eventstrategy_t *event);
 static void onalways_release(eventstrategy_t *event);
 static int onalways_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* ontimeout_t concrete strategy */
+/* ontimeout_t의 구체적인 strategy */
 struct ontimeout_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
-    expression_t *timeout; /* timeout value */
-    float timer; /* time accumulator */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
+    expression_t *timeout; /* timeout 값 */
+    float timer; /* 누적 시간 */
 };
 static eventstrategy_t* ontimeout_new(expression_t *timeout);
 static void ontimeout_init(eventstrategy_t *event);
 static void ontimeout_release(eventstrategy_t *event);
 static int ontimeout_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* oncollision_t concrete strategy */
+/* oncollision_t의 구체적인 strategy */
 struct oncollision_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
-    char *target_name; /* object name */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
+    char *target_name; /* 객체 명 */
 };
 static eventstrategy_t* oncollision_new(const char *target_name);
 static void oncollision_init(eventstrategy_t *event);
 static void oncollision_release(eventstrategy_t *event);
 static int oncollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onanimationfinished_t concrete strategy */
+/* onanimationfinished_t의 구체적인 strategy */
 struct onanimationfinished_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onanimationfinished_new();
 static void onanimationfinished_init(eventstrategy_t *event);
 static void onanimationfinished_release(eventstrategy_t *event);
 static int onanimationfinished_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onrandomevent_t concrete strategy */
+/* onrandomevent_t의 구체적인 strategy */
 struct onrandomevent_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
     expression_t *probability; /* 0.0 <= probability <= 1.0 */
 };
 static eventstrategy_t* onrandomevent_new(expression_t *probability);
@@ -122,56 +122,56 @@ static void onrandomevent_init(eventstrategy_t *event);
 static void onrandomevent_release(eventstrategy_t *event);
 static int onrandomevent_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onlevelcleared_t concrete strategy */
+/* onlevelcleared_t의 구체적인 strategy */
 struct onlevelcleared_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onlevelcleared_new();
 static void onlevelcleared_init(eventstrategy_t *event);
 static void onlevelcleared_release(eventstrategy_t *event);
 static int onlevelcleared_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onplayercollision_t concrete strategy */
+/* onplayercollision_t의 구체적인 strategy */
 struct onplayercollision_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onplayercollision_new();
 static void onplayercollision_init(eventstrategy_t *event);
 static void onplayercollision_release(eventstrategy_t *event);
 static int onplayercollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onplayerattack_t concrete strategy */
+/* onplayerattack_t의 구체적인 strategy */
 struct onplayerattack_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onplayerattack_new();
 static void onplayerattack_init(eventstrategy_t *event);
 static void onplayerattack_release(eventstrategy_t *event);
 static int onplayerattack_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onplayerrectcollision_t concrete strategy */
+/* onplayerrectcollision_t의 구체적인 strategy */
 struct onplayerrectcollision_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
-    expression_t *x1, *y1, *x2, *y2; /* rectangle offsets (related to the hotspot of the holder object */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
+    expression_t *x1, *y1, *x2, *y2; /* 사각형의 offsets (holder 객체의 hotspot과 관련) */
 };
 static eventstrategy_t* onplayerrectcollision_new(expression_t *x1, expression_t *y1, expression_t *x2, expression_t *y2);
 static void onplayerrectcollision_init(eventstrategy_t *event);
 static void onplayerrectcollision_release(eventstrategy_t *event);
 static int onplayerrectcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onobservedplayer_t concrete strategy */
+/* onobservedplayer_t의 구체적인 strategy */
 struct onobservedplayer_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
-    char *player_name; /* the event will be triggered if the observed player is called player_name */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
+    char *player_name; /* observed player가 player_name을 호출하면 이벤트가 발생한다. */
 };
 static eventstrategy_t* onobservedplayer_new(const char *player_name);
 static void onobservedplayer_init(eventstrategy_t *event);
 static void onobservedplayer_release(eventstrategy_t *event);
 static int onobservedplayer_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onplayerevent_t concrete strategy */
+/* onplayerevent_t의 구체적인 strategy */
 struct onplayerevent_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
     int (*callback)(const player_t*);
 };
 static eventstrategy_t* onplayerevent_new(int (*callback)(const player_t*));
@@ -201,9 +201,9 @@ static eventstrategy_t* onplayerunderwater_new() { return onplayerevent_new(play
 static eventstrategy_t* onplayerspeedshoes_new() { return onplayerevent_new(player_is_ultrafast); }
 static eventstrategy_t* onplayerinvincible_new() { return onplayerevent_new(player_is_invincible); }
 
-/* onplayershield_t concrete strategy */
+/* onplayershield_t의 구체적인 strategy */
 struct onplayershield_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
     int shield_type; /* a SH_* constant defined at player.h */
 };
 static eventstrategy_t* onplayershield_new(int shield_type);
@@ -211,7 +211,7 @@ static void onplayershield_init(eventstrategy_t *event);
 static void onplayershield_release(eventstrategy_t *event);
 static int onplayershield_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onbrickcollision_t concrete strategy */
+/* onbrickcollision_t의 구체적인 strategy */
 struct onbrickcollision_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -220,7 +220,7 @@ static void onbrickcollision_init(eventstrategy_t *event);
 static void onbrickcollision_release(eventstrategy_t *event);
 static int onbrickcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onfloorcollision_t concrete strategy */
+/* onfloorcollision_t의 구체적인 strategy */
 struct onfloorcollision_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -229,7 +229,7 @@ static void onfloorcollision_init(eventstrategy_t *event);
 static void onfloorcollision_release(eventstrategy_t *event);
 static int onfloorcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onceilingcollision_t concrete strategy */
+/* onceilingcollision_t의 구체적인 strategy */
 struct onceilingcollision_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -238,7 +238,7 @@ static void onceilingcollision_init(eventstrategy_t *event);
 static void onceilingcollision_release(eventstrategy_t *event);
 static int onceilingcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onleftwallcollision_t concrete strategy */
+/* onleftwallcollision_t의 구체적인 strategy */
 struct onleftwallcollision_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -247,7 +247,7 @@ static void onleftwallcollision_init(eventstrategy_t *event);
 static void onleftwallcollision_release(eventstrategy_t *event);
 static int onleftwallcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onrightwallcollision_t concrete strategy */
+/* onrightwallcollision_t의 구체적인 strategy */
 struct onrightwallcollision_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -256,7 +256,7 @@ static void onrightwallcollision_init(eventstrategy_t *event);
 static void onrightwallcollision_release(eventstrategy_t *event);
 static int onrightwallcollision_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onbutton_t concrete strategy */
+/* onbutton_t의 구체적인 strategy */
 struct onbutton_t {
     eventstrategy_t base; /* implements eventstrategy_t */
     inputbutton_t button;
@@ -267,7 +267,7 @@ static void onbutton_init(eventstrategy_t *event);
 static void onbutton_release(eventstrategy_t *event);
 static int onbutton_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* oncameraevent_t concrete strategy */
+/* oncameraevent_t의 구체적인 strategy */
 struct oncameraevent_t {
     eventstrategy_t base; /* implements eventstrategy_t */
     const actor_t* (*multiplexer)(object_t*); /* returns the correct actor: this object or the observed player? */
@@ -283,7 +283,7 @@ static const actor_t* oncameraevent_mux_observedplayer(object_t *o) { return ene
 static eventstrategy_t* oncamerafocus_new() { return oncameraevent_new(oncameraevent_mux_object); }
 static eventstrategy_t* oncamerafocusplayer_new() { return oncameraevent_new(oncameraevent_mux_observedplayer); }
 
-/* oncameralock_t concrete strategy */
+/* oncameralock_t의 구체적인 strategy */
 struct oncameralock_t {
     eventstrategy_t base; /* implements eventstrategy_t */
 };
@@ -292,9 +292,9 @@ static void oncameralock_init(eventstrategy_t *event);
 static void oncameralock_release(eventstrategy_t *event);
 static int oncameralock_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 
-/* onmusicplay_t concrete strategy */
+/* onmusicplay_t의 구체적인 strategy */
 struct onmusicplay_t {
-    eventstrategy_t base; /* implements eventstrategy_t */
+    eventstrategy_t base; /* eventstrategy_t 구현 */
 };
 static eventstrategy_t* onmusicplay_new();
 static void onmusicplay_init(eventstrategy_t *event);
@@ -592,7 +592,7 @@ objectmachine_t *make_decorator(objectmachine_t *decorated_machine, const char *
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->new_state_name = str_dup(new_state_name);
     me->strategy = strategy;
@@ -1383,8 +1383,6 @@ void oncameralock_release(eventstrategy_t *event)
 int oncameralock_should_trigger_event(eventstrategy_t *event, object_t *object, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     return level_is_camera_locked();
-    /*player_t *player = enemy_get_observed_player(object);
-    return player->in_locked_area;*/
 }
 
 
@@ -1417,5 +1415,3 @@ int onmusicplay_should_trigger_event(eventstrategy_t *event, object_t *object, p
 {
     return music_is_playing();
 }
-
-

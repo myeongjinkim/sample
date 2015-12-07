@@ -26,7 +26,7 @@
 /* objectdecorator_setzindex_t class */
 typedef struct objectdecorator_setzindex_t objectdecorator_setzindex_t;
 struct objectdecorator_setzindex_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     expression_t *zindex;
 };
 
@@ -40,7 +40,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setzindex_new(objectmachine_t *decorated_machine, expression_t *zindex)
 {
     objectdecorator_setzindex_t *me = mallocx(sizeof *me);
@@ -92,10 +92,10 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     object_t *object = obj->get_object_instance(obj);
     float zindex = expression_evaluate(me->zindex); /* no clip() */
 
-    /* update */
+    /* 업데이트 */
     object->zindex = zindex;
 
-    /* decorator pattern */
+    /* decorator 패턴 */
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
 
@@ -108,4 +108,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

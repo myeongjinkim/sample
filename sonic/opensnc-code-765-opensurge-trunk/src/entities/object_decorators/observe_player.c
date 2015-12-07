@@ -29,14 +29,14 @@ typedef struct observeplayerstrategy_t observeplayerstrategy_t;
 
 /* objectdecorator_observeplayer_t class */
 struct objectdecorator_observeplayer_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     observeplayerstrategy_t *strategy;
 };
 
 /* observeplayerstrategy_t class */
 struct observeplayerstrategy_t {
     char *player_name; /* player name */
-    object_t *object; /* pointer to the object instance */
+    object_t *object; /* 객체 instance 포인터 */
     void (*run)(observeplayerstrategy_t*, player_t**, int);
 };
 
@@ -58,7 +58,7 @@ static void observe_all_players(observeplayerstrategy_t *strategy, player_t **te
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_observeplayer_new(objectmachine_t *decorated_machine, const char *player_name)
 {
     object_t *object = decorated_machine->get_object_instance(decorated_machine);
@@ -95,7 +95,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, observeplaye
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass 구현 */
     dec->decorated_machine = decorated_machine;
     me->strategy = strategy;
 

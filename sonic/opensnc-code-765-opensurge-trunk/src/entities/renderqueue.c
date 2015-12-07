@@ -124,7 +124,7 @@ static int type_brick(renderable_t r) { return 4; }
 
 /* public interface */
 
-/* starts a new rendering process */
+/* 새로운 rendering 과정을 시작한다. */
 void renderqueue_begin(v2d_t camera_position)
 {
     /* initialize stuff */
@@ -133,7 +133,7 @@ void renderqueue_begin(v2d_t camera_position)
     camera = camera_position;
 }
 
-/* finishes an existing rendering process, rendering everything */
+/* 존재하는 rendering 과정을 종료한다. */
 void renderqueue_end()
 {
     renderqueue_t *it, *next;
@@ -164,7 +164,7 @@ void renderqueue_end()
     queue = NULL;
 }
 
-/* enqueues entities */
+/* entity들을 queue에 집어 넣는다. */
 void renderqueue_enqueue_brick(brick_t *brick)
 {
     renderqueue_t *node = mallocx(sizeof *node);

@@ -1,24 +1,3 @@
-/*
- * Open Surge Engine
- * teleporter.c - teleporter
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include "teleporter.h"
 #include "../../core/util.h"
 #include "../../core/input.h"
@@ -26,18 +5,13 @@
 #include "../../core/timer.h"
 #include "../../core/soundfactory.h"
 #include "../../scenes/level.h"
-#include "../player.h"
-#include "../brick.h"
-#include "../item.h"
-#include "../enemy.h"
-#include "../actor.h"
 
-/* teleporter class */
+/* teleporter 클래스 */
 typedef struct teleporter_t teleporter_t;
 struct teleporter_t {
     item_t item; /* base class */
-    int is_disabled; /* is this teleporter disabled? */
-    int is_active; /* is this object teleporting the team? */
+    int is_disabled; /* teleporter 사용할 수 없는지 여부 변수 */
+    int is_active; /* 이 개체가 팀을 순간이동 시키는지 여부 변수 */
     float timer; /* time counter */
     player_t *who; /* who has activated me? */
 };
@@ -51,7 +25,7 @@ static void teleport_player_to(player_t *player, v2d_t position);
 
 
 
-/* public methods */
+/* teleporter 객체 생성, 할당 */
 item_t* teleporter_create()
 {
     item_t *item = mallocx(sizeof(teleporter_t));
@@ -63,7 +37,8 @@ item_t* teleporter_create()
 
     return item;
 }
-
+/* teleporter  활성화 함수
+활성 가능시 TRUE 값 , 카메라 위치 조정, 사운드 생성*/
 void teleporter_activate(item_t *teleporter, player_t *who)
 {
     teleporter_t *me = (teleporter_t*)teleporter;
@@ -79,12 +54,11 @@ void teleporter_activate(item_t *teleporter, player_t *who)
     }
 }
 
-/* private methods */
+/* teleporter 생성  */
 void teleporter_init(item_t *item)
 {
     teleporter_t *me = (teleporter_t*)item;
 
-    item->always_active = TRUE;
     item->obstacle = FALSE;
     item->bring_to_back = TRUE;
     item->preserve = TRUE;
@@ -98,26 +72,26 @@ void teleporter_init(item_t *item)
 }
 
 
-
+/* teleporter 없애는 모습 */
 void teleporter_release(item_t* item)
 {
     actor_destroy(item->actor);
 }
 
 
-
+/* teleporter 특성 생성 */
 void teleporter_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list)
 {
     teleporter_t *me = (teleporter_t*)item;
     actor_t *act = item->actor;
     float dt = timer_get_delta();
     int i, k=0;
-    
+
     if(me->is_active) {
         me->timer += dt;
         if(me->timer >= 3.0f) {
-            /* okay, teleport them all! */
-            player_t *who = me->who; /* who has activated the teleporter? */
+            /* 플레이어 팀원 모드 텔레포트 */
+            player_t *who = me->who; /* 어느 플레이어가 텔레포트를 활성화 하였는지 */
 
             input_restore(who->actor->input);
             level_set_camera_focus(who->actor);
@@ -131,10 +105,10 @@ void teleporter_update(item_t* item, player_t** team, int team_size, brick_list_
             }
 
             me->is_active = FALSE;
-            me->is_disabled = TRUE; /* the teleporter works only once */
+            me->is_disabled = TRUE; /* 텔레 포터는 한번만 작동 */
         }
         else {
-            ; /* the players are being teletransported... wait a little bit. */
+            ; /* 플레이어들은 조금 기다리게 되는 상태, 텔레포트 되는 중간 상태 */
         }
 
         actor_change_animation(act, sprite_get_animation("SD_TELEPORTER", 1));
@@ -143,21 +117,25 @@ void teleporter_update(item_t* item, player_t** team, int team_size, brick_list_
         actor_change_animation(act, sprite_get_animation("SD_TELEPORTER", 0));
 }
 
-
+/* teleporter 모습 */
 void teleporter_render(item_t* item, v2d_t camera_position)
 {
     actor_render(item->actor, camera_position);
 }
 
-/* teleports the player to the given position */
+/* 지정된 위치 에 플레이어를 텔레포트 */
 void teleport_player_to(player_t *player, v2d_t position)
 {
     player->actor->position = position;
     player->actor->speed = v2d_new(0,0);
+    player->actor->is_jumping = FALSE;
+    player->flying = FALSE;
+    player->climbing = FALSE;
+    player->getting_hit = FALSE;
+    player->spring = FALSE;
     player->actor->angle = 0;
     player->disable_wall = PLAYER_WALL_NONE;
     player->entering_loop = FALSE;
     player->at_loopfloortop = FALSE;
     player->bring_to_back = FALSE;
 }
-

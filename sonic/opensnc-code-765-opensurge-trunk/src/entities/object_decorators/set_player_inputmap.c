@@ -42,7 +42,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setplayerinputmap_new(objectmachine_t *decorated_machine, const char *inputmap_name)
 {
     objectdecorator_setplayerinputmap_t *me = mallocx(sizeof *me);
@@ -53,7 +53,7 @@ objectmachine_t* objectdecorator_setplayerinputmap_new(objectmachine_t *decorate
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->inputmap_name = str_dup(inputmap_name);
 
@@ -95,7 +95,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     player_t *player = enemy_get_observed_player(object);
     input_t *in = player->actor->input;
 
-    /* I'm sure 'in' is an inputuserdefined_t* */
+    /* in은 inputuserdefined_t 포인터이다. */
     input_change_mapping((inputuserdefined_t*)in, me->inputmap_name);
 
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);

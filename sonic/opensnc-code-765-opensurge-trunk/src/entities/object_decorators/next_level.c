@@ -27,7 +27,7 @@
 /* objectdecorator_nextlevel_t class */
 typedef struct objectdecorator_nextlevel_t objectdecorator_nextlevel_t;
 struct objectdecorator_nextlevel_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
 };
 
 /* private methods */
@@ -40,7 +40,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_nextlevel_new(objectmachine_t *decorated_machine)
 {
     objectdecorator_nextlevel_t *me = mallocx(sizeof *me);
@@ -51,7 +51,7 @@ objectmachine_t* objectdecorator_nextlevel_new(objectmachine_t *decorated_machin
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     return obj;
@@ -101,4 +101,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * add_to_score.h - Adds a value to the score
  * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +21,7 @@
 #define _OD_ADDTOSCORE_H
 
 #include "base/objectdecorator.h"
-#include "../../core/nanocalc/nanocalc.h"
 
-objectmachine_t* objectdecorator_addtoscore_new(objectmachine_t *decorated_machine, expression_t *score);
+objectmachine_t* objectdecorator_addtoscore_new(objectmachine_t *decorated_machine, int score);
 
 #endif
-

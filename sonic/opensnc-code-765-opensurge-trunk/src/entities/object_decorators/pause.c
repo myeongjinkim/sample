@@ -26,7 +26,7 @@
 /* objectdecorator_pause_t class */
 typedef struct objectdecorator_pause_t objectdecorator_pause_t;
 struct objectdecorator_pause_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
 };
 
 /* private methods */
@@ -50,7 +50,7 @@ objectmachine_t* objectdecorator_pause_new(objectmachine_t *decorated_machine)
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     return obj;
@@ -100,4 +100,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

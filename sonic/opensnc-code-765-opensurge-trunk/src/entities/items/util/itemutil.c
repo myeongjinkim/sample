@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * itemutil.c - items: internal utilities
  * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +24,7 @@
 #include "../../../entities/item.h"
 #include "../../../entities/actor.h"
 
-/*
- * find_closest_item()
- * Finds the closest item (minimal distance) of
- * a given type relative to 'me'. Returns NULL
- * if nothing nice is found.
- */
+/* 가까운 거리의 아이템, 장애물 설정*/
 item_t *find_closest_item(item_t *me, item_list_t *list, int desired_type, float *distance)
 {
     float min_dist = INFINITY_FLT;
@@ -39,7 +32,8 @@ item_t *find_closest_item(item_t *me, item_list_t *list, int desired_type, float
     item_t *ret = NULL;
     v2d_t v;
 
-    for(it=list; it; it=it->next) { /* this list must be small enough */
+/* 캐릭터의 장애물과 아이템에 대한 크기 설정 */
+    for(it=list; it; it=it->next) {
         if(it->data->type == desired_type) {
             v = v2d_subtract(it->data->actor->position, me->actor->position);
             if(v2d_magnitude(v) < min_dist) {
@@ -54,4 +48,3 @@ item_t *find_closest_item(item_t *me, item_list_t *list, int desired_type, float
 
     return ret;
 }
-

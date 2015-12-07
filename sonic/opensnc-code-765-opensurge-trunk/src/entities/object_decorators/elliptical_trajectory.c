@@ -1,36 +1,16 @@
-/*
- * Open Surge Engine
- * elliptical_trajectory.h - This decorator makes the object follow an elliptical trajectory
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include <math.h>
 #include "elliptical_trajectory.h"
 #include "../../core/util.h"
 #include "../../core/timer.h"
 
-/* objectdecorator_ellipticaltrajectory_t class */
+/* objectdecorator_ellipticaltrajectory_t 클래스 */
 typedef struct objectdecorator_ellipticaltrajectory_t objectdecorator_ellipticaltrajectory_t;
 struct objectdecorator_ellipticaltrajectory_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    expression_t *amplitude_x, *amplitude_y; /* distance from the center of the ellipsis (actor's spawn point) */
-    expression_t *angularspeed_x, *angularspeed_y; /* speed, in radians per second */
-    expression_t *initialphase_x, *initialphase_y; /* initial phase in degrees */
+    objectdecorator_t base; /* objectdecorator_t에 상속 */
+    expression_t *amplitude_x, *amplitude_y; /* 거리 (actor's spawn point) */
+    expression_t *angularspeed_x, *angularspeed_y; /* 속도, in radians per second */
+    expression_t *initialphase_x, *initialphase_y; /* 초기단계 in degrees */
     float elapsed_time;
 };
 
@@ -45,6 +25,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 /* public methods */
 
 /* class constructor */
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_ellipticaltrajectory_new(objectmachine_t *decorated_machine, expression_t *amplitude_x, expression_t *amplitude_y, expression_t *angularspeed_x, expression_t *angularspeed_y, expression_t *initialphase_x, expression_t *initialphase_y)
 {
     objectdecorator_ellipticaltrajectory_t *me = mallocx(sizeof *me);
@@ -72,6 +53,7 @@ objectmachine_t* objectdecorator_ellipticaltrajectory_new(objectmachine_t *decor
 
 
 /* private methods */
+/* objectmachine_t 상속 받아서 생성 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -81,7 +63,7 @@ void init(objectmachine_t *obj)
 
     decorated_machine->init(decorated_machine);
 }
-
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -98,7 +80,7 @@ void release(objectmachine_t *obj)
     decorated_machine->release(decorated_machine);
     free(obj);
 }
-
+/* objectmachine_t 객체 캐릭터 변화 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -112,7 +94,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     float elapsed_time = (me->elapsed_time += dt);
     v2d_t old_position = act->position;
 
-    /* elliptical trajectory */
+    /* 타원형 궤도 */
     /*
         let C: R -> R^2 be such that:
             C(t) = (
@@ -137,7 +119,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
                  Ay * Sy * cos( Iy + Sy*t )
             )
     */
-
+    /* 공식 */
     float amplitude_x = expression_evaluate(me->amplitude_x);
     float amplitude_y = expression_evaluate(me->amplitude_y);
     float angularspeed_x = expression_evaluate(me->angularspeed_x) * (2.0f * PI);
@@ -151,7 +133,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     /* sensors */
     actor_sensors(act, brick_list, &up, &upright, &right, &downright, &down, &downleft, &left, &upleft);
 
-    /* I don't want to get stuck into walls */
+    /* 벽에 들어가고 싶지 않을 때 */
     if(right != NULL) {
         if(act->position.x > old_position.x)
             act->position.x = act->hot_spot.x - image_width(actor_image(act)) + right->x;
@@ -175,7 +157,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     /* decorator pattern */
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
-
+/*  변화에 대한 모습 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -185,4 +167,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

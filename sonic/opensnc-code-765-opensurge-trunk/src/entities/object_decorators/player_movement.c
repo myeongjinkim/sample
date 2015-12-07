@@ -26,8 +26,8 @@
 /* objectdecorator_playermovement_t class */
 typedef struct objectdecorator_playermovement_t objectdecorator_playermovement_t;
 struct objectdecorator_playermovement_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    int enable; /* should the movement be enabled? */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    int enable; /* movement가 활성화되어 있는지 확인하는 변수 */
 };
 
 /* private methods */
@@ -43,7 +43,7 @@ static objectmachine_t *make_decorator(objectmachine_t *decorated_machine, int e
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_enableplayermovement_new(objectmachine_t *decorated_machine)
 {
     return make_decorator(decorated_machine, TRUE);
@@ -70,7 +70,7 @@ objectmachine_t* make_decorator(objectmachine_t *decorated_machine, int enable)
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->enable = enable;
 
@@ -120,4 +120,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

@@ -26,13 +26,13 @@
 #include "../../scenes/level.h"
 #include "../object_vm.h"
 
-/* objectdecorator_variables_t class */
+/* objectdecorator_variables_t 클래스 */
 typedef struct objectdecorator_variables_t objectdecorator_variables_t;
 struct objectdecorator_variables_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     expression_t *expr;
     char *new_state_name;
-    int (*must_change_state)(float); /* strategy */
+    int (*must_change_state)(float);
 };
 
 /* private methods */
@@ -51,7 +51,7 @@ static int unless_strategy(float expr_result) { return fabs(expr_result) < 1e-5;
 
 /* public methods */
 
-/* class constructor */
+/* 클래스 생성자 */
 objectmachine_t* objectdecorator_let_new(objectmachine_t *decorated_machine, expression_t *expr)
 {
     objectdecorator_variables_t *me = mallocx(sizeof *me);
@@ -62,7 +62,7 @@ objectmachine_t* objectdecorator_let_new(objectmachine_t *decorated_machine, exp
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* super클래스에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     me->expr = expr;
@@ -82,7 +82,7 @@ objectmachine_t* objectdecorator_if_new(objectmachine_t *decorated_machine, expr
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* super클래스에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     me->expr = expr;
@@ -102,7 +102,7 @@ objectmachine_t* objectdecorator_unless_new(objectmachine_t *decorated_machine, 
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* super클래스에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     me->expr = expr;
@@ -162,4 +162,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

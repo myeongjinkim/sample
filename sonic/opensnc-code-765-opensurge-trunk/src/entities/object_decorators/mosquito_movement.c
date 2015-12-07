@@ -1,33 +1,13 @@
-/*
- * Open Surge Engine
- * mosquito_movement.c - This decorator makes the object perform a mosquito-like movement (LOL ;-)
- * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
 
 #include "mosquito_movement.h"
 #include "../../scenes/level.h"
 #include "../../core/timer.h"
 #include "../../core/util.h"
 
-/* objectdecorator_mosquitomovement_t class */
+/* objectdecorator_mosquitomovement_t 클래스 */
 typedef struct objectdecorator_mosquitomovement_t objectdecorator_mosquitomovement_t;
 struct objectdecorator_mosquitomovement_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에 상속 */
     expression_t *speed; /* speed magnitude */
 };
 
@@ -44,6 +24,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 /* public methods */
 
 /* class constructor */
+/* class 구조 구성, 할당 */
 objectmachine_t* objectdecorator_mosquitomovement_new(objectmachine_t *decorated_machine, expression_t *speed)
 {
     objectdecorator_mosquitomovement_t *me = mallocx(sizeof *me);
@@ -66,6 +47,7 @@ objectmachine_t* objectdecorator_mosquitomovement_new(objectmachine_t *decorated
 
 
 /* private methods */
+/* objectmachine_t 상속 받아서 생성 */
 void init(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -75,7 +57,7 @@ void init(objectmachine_t *obj)
 
     decorated_machine->init(decorated_machine);
 }
-
+/* objectmachine_t 해제 */
 void release(objectmachine_t *obj)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -87,7 +69,7 @@ void release(objectmachine_t *obj)
     decorated_machine->release(decorated_machine);
     free(obj);
 }
-
+/* objectmachine_t  변화 */
 void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -107,7 +89,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
 
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
-
+/*  변화에 대한 모습 */
 void render(objectmachine_t *obj, v2d_t camera_position)
 {
     objectdecorator_t *dec = (objectdecorator_t*)obj;
@@ -117,4 +99,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

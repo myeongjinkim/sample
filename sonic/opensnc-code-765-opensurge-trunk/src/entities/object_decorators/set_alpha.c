@@ -28,8 +28,8 @@
 /* objectdecorator_setalpha_t class */
 typedef struct objectdecorator_setalpha_t objectdecorator_setalpha_t;
 struct objectdecorator_setalpha_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    expression_t *alpha; /* 0.0f (invisible) <= alpha <= 1.0f (opaque) */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    expression_t *alpha; /* 0.0f (투명) <= alpha <= 1.0f (불투명) */
 };
 
 /* private methods */
@@ -44,7 +44,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setalpha_new(objectmachine_t *decorated_machine, expression_t *alpha)
 {
     objectdecorator_setalpha_t *me = mallocx(sizeof *me);
@@ -111,4 +111,3 @@ void render(objectmachine_t *obj, v2d_t camera_position)
 
     decorated_machine->render(decorated_machine, camera_position);
 }
-

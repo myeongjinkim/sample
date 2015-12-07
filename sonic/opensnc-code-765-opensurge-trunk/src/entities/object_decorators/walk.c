@@ -23,11 +23,11 @@
 #include "../../core/util.h"
 #include "../../core/timer.h"
 
-/* objectdecorator_walk_t class */
+/* objectdecorator_walk_t 클래스 */
 typedef struct objectdecorator_walk_t objectdecorator_walk_t;
 struct objectdecorator_walk_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
-    expression_t *speed; /* movement speed */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
+    expression_t *speed; /* 움직이는 속도 */
     float direction; /* -1.0f or 1.0f */
 };
 
@@ -41,7 +41,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* 클래스 생성자 */
 objectmachine_t* objectdecorator_walk_new(objectmachine_t *decorated_machine, expression_t *speed)
 {
     objectdecorator_walk_t *me = mallocx(sizeof *me);
@@ -98,13 +98,12 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
     brick_t *down = NULL, *downleft = NULL, *left = NULL, *upleft = NULL;
     float speed = expression_evaluate(me->speed);
 
-    /* move! */
     act->position.x += (me->direction * speed) * dt;
 
-    /* sensors */
+    /* 센서 */
     actor_sensors(act, brick_list, &up, &upright, &right, &downright, &down, &downleft, &left, &upleft);
 
-    /* swap direction when a wall is touched */
+    /* 벽을 터치하면 방향을 바꾼다. */
     if(right != NULL) {
         if(me->direction > 0.0f) {
             act->position.x = act->hot_spot.x - image_width(actor_image(act)) + right->x;
@@ -119,7 +118,6 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
         }
     }
 
-    /* I don't want to fall from the platforms! */
     if(down != NULL) {
         if(downright == NULL && downleft != NULL && me->direction > 0.0f)
             me->direction = -1.0f;
@@ -127,7 +125,7 @@ void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *
             me->direction = 1.0f;
     }
 
-    /* decorator pattern */
+    /* decorator 패턴 */
     decorated_machine->update(decorated_machine, team, team_size, brick_list, item_list, object_list);
 }
 
@@ -136,8 +134,5 @@ void render(objectmachine_t *obj, v2d_t camera_position)
     objectdecorator_t *dec = (objectdecorator_t*)obj;
     objectmachine_t *decorated_machine = dec->decorated_machine;
 
-    ; /* empty */
-
     decorated_machine->render(decorated_machine, camera_position);
 }
-

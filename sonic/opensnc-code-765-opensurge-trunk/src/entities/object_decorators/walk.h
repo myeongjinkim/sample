@@ -28,4 +28,3 @@
 objectmachine_t* objectdecorator_walk_new(objectmachine_t *decorated_machine, expression_t *speed);
 
 #endif
-

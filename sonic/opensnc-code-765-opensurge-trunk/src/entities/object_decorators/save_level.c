@@ -27,7 +27,7 @@
 /* objectdecorator_savelevel_t class */
 typedef struct objectdecorator_savelevel_t objectdecorator_savelevel_t;
 struct objectdecorator_savelevel_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
 };
 
 /* private methods */
@@ -35,8 +35,8 @@ static void init(objectmachine_t *obj);
 static void release(objectmachine_t *obj);
 static void update(objectmachine_t *obj, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, object_list_t *object_list);
 static void render(objectmachine_t *obj, v2d_t camera_position);
-static void fix_objects(object_t *obj, void *any_data); /* will fix obj and its children (ie, set ptr->created_from_editor to TRUE) */
-static void unfix_objects(object_t *obj, void *any_data); /* will undo whatever fix_objects() did */
+static void fix_objects(object_t *obj, void *any_data); /* obj와 자식을 수정한다. (즉, ptr->created_from_editor을 TRUE로 설정한다.) */
+static void unfix_objects(object_t *obj, void *any_data); /* fix_objects()가 한 일을 취소한다. */
 
 
 
@@ -44,7 +44,7 @@ static void unfix_objects(object_t *obj, void *any_data); /* will undo whatever 
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_savelevel_new(objectmachine_t *decorated_machine)
 {
     objectdecorator_savelevel_t *me = mallocx(sizeof *me);
@@ -55,7 +55,7 @@ objectmachine_t* objectdecorator_savelevel_new(objectmachine_t *decorated_machin
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
 
     return obj;

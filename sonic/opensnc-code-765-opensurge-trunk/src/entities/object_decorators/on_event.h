@@ -28,7 +28,7 @@
 #include "base/objectdecorator.h"
 #include "../../core/nanocalc/nanocalc.h"
 
-/* general events */
+/* 일반적인 events */
 objectmachine_t* objectdecorator_onalways_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_ontimeout_new(objectmachine_t *decorated_machine, expression_t *timeout, const char *new_state_name);
 objectmachine_t* objectdecorator_oncollision_new(objectmachine_t *decorated_machine, const char *target_name, const char *new_state_name);
@@ -36,7 +36,7 @@ objectmachine_t* objectdecorator_onanimationfinished_new(objectmachine_t *decora
 objectmachine_t* objectdecorator_onrandomevent_new(objectmachine_t *decorated_machine, expression_t *probability, const char *new_state_name);
 objectmachine_t* objectdecorator_onlevelcleared_new(objectmachine_t *decorated_machine, const char *new_state_name);
 
-/* input events */
+/* 입력 events */
 objectmachine_t* objectdecorator_onbuttondown_new(objectmachine_t *decorated_machine, const char *button_name, const char *new_state_name);
 objectmachine_t* objectdecorator_onbuttonpressed_new(objectmachine_t *decorated_machine, const char *button_name, const char *new_state_name);
 objectmachine_t* objectdecorator_onbuttonup_new(objectmachine_t *decorated_machine, const char *button_name, const char *new_state_name);
@@ -66,7 +66,7 @@ objectmachine_t* objectdecorator_onplayerwin_new(objectmachine_t *decorated_mach
 objectmachine_t* objectdecorator_onplayerintheair_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_onplayerunderwater_new(objectmachine_t *decorated_machine, const char *new_state_name);
 
-/* player events: shields */
+/* player events: 방패 */
 objectmachine_t* objectdecorator_onnoshield_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_onshield_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_onfireshield_new(objectmachine_t *decorated_machine, const char *new_state_name);
@@ -75,7 +75,7 @@ objectmachine_t* objectdecorator_onwatershield_new(objectmachine_t *decorated_ma
 objectmachine_t* objectdecorator_onacidshield_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_onwindshield_new(objectmachine_t *decorated_machine, const char *new_state_name);
 
-/* player events: others */
+/* player events: 기타 */
 objectmachine_t* objectdecorator_onplayerspeedshoes_new(objectmachine_t *decorated_machine, const char *new_state_name);
 objectmachine_t* objectdecorator_onplayerinvincible_new(objectmachine_t *decorated_machine, const char *new_state_name);
 
@@ -95,4 +95,3 @@ objectmachine_t* objectdecorator_oncameralock_new(objectmachine_t *decorated_mac
 objectmachine_t* objectdecorator_onmusicplay_new(objectmachine_t *decorated_machine, const char *new_state_name);
 
 #endif
-

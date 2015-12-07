@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * itembox.h - item boxes
  * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +24,7 @@
 
 /* public methods */
 item_t* lifebox_create();
-item_t* collectiblebox_create();
+item_t* ringbox_create();
 item_t* starbox_create();
 item_t* speedbox_create();
 item_t* glassesbox_create();

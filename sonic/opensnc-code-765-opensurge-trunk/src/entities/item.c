@@ -59,7 +59,7 @@
 
 /*
  * item_create()
- * Creates a new item
+ * 각가의 경우에 따라 새로운 아이템을 생성하는 함수
  */
 item_t *item_create(int type)
 {
@@ -404,7 +404,7 @@ item_t *item_create(int type)
 
 /*
  * item_destroy()
- * Destroys an item
+ * 아이템을 삭제하는 함수.
  */
 item_t* item_destroy(item_t *item)
 {
@@ -418,7 +418,7 @@ item_t* item_destroy(item_t *item)
 
 /*
  * item_render()
- * Renders an item
+ * 아이템을 생성하는 함수.
  */
 void item_render(item_t *item, v2d_t camera_position)
 {
@@ -429,10 +429,9 @@ void item_render(item_t *item, v2d_t camera_position)
 
 /*
  * item_update()
- * Runs every cycle of the game to update an item
+ * item을 업데이트할 수 있는 모든 경우에서 실행되는 함수.
  */
 void item_update(item_t *item, player_t **team, int team_size, brick_list_t *brick_list, item_list_t *item_list, enemy_list_t *enemy_list)
 {
     item->update(item, team, team_size, brick_list, item_list, enemy_list);
 }
-

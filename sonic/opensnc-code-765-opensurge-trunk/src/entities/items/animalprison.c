@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * animalprison.c - animal prison (this object appears after the boss fight)
  * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,54 +23,36 @@
 #include "../../core/timer.h"
 #include "../../core/soundfactory.h"
 #include "../../scenes/level.h"
-#include "../player.h"
-#include "../brick.h"
-#include "../item.h"
-#include "../enemy.h"
-#include "../actor.h"
 
-
-
-/*
-   The animal prison is that object you hit at the end of the level
-   in order to free the little animals. This is state machine:
-
-   IDLE ---> EXPLODING ---> RELEASING THE ANIMALS ---> BROKEN
-
-   We implement the State design pattern.
-*/
-
-
-
-/* Basic state (abstract) */
+/* 캐릭터의 기본적인 상태 */
 typedef struct state_t state_t; /* abstract class */
 struct state_t {
     void (*handle)(state_t*,item_t*,player_t**,int); /* receives: state, animalprison, team, team_size */
 };
 
-/* Idle state: waiting to be hit... */
+/* Idle은 캐릭터가 공격할 때 까지 기다리는 상태 */
 typedef struct state_idle_t state_idle_t; /* concrete state: idle */
 struct state_idle_t {
-    state_t state; /* base class */
-    int being_hit; /* am I being hit? */
-    int hit_count; /* the player has hit me 'hit_count' times */
+    state_t state; /* 기본적인 상태 클래스 */
+    int being_hit; /* 공격 입력을 받는 변수 */
+    int hit_count; /* 공격을 몇번 했는지 입력받는 변수 */
 };
 
 static state_t* state_idle_new(); /* state constructor */
 static void state_idle_handle(state_t*,item_t*,player_t**,int); /* private method */
 
-/* After the animal prison got hit a few times, it explodes for a little while */
+/* 캐릭터가 감옥에 갇힌 동안 공격을 몇번 시도후 감옥이 풀리는 상태 */
 typedef struct state_exploding_t state_exploding_t; /* concrete state: exploding */
 struct state_exploding_t {
-    state_t state; /* base class */
-    float explode_timer; /* explosion time accumulator */
-    float break_timer; /* how long until it breaks... */
+    state_t state;
+    float explode_timer; /* 감옥이 풀리는 시도 횟수 */
+    float break_timer; /* 얼마동안 깰려고 공격하였는지를 나타내는 횟수 */
 };
 
 static state_t* state_exploding_new(); /* state constructor */
 static void state_exploding_handle(state_t*,item_t*,player_t**,int); /* private method */
 
-/* After it explodes, it must release the little animals ;) */
+/* 감옥이 풀린후에 캐릭터가 자유롭게 행동할 수 있도록 하는 상태  */
 typedef struct state_releasing_t state_releasing_t; /* concrete state: releasing */
 struct state_releasing_t {
     state_t state;
@@ -81,7 +61,7 @@ struct state_releasing_t {
 static state_t* state_releasing_new(); /* state constructor */
 static void state_releasing_handle(state_t*,item_t*,player_t**,int); /* private method */
 
-/* This is finally broken */
+/* 마침내 감옥 상태에서 풀려날 때 */
 typedef struct state_broken_t state_broken_t; /* concrete state: broken */
 struct state_broken_t {
     state_t state;
@@ -92,7 +72,7 @@ static void state_broken_handle(state_t*,item_t*,player_t**,int); /* private met
 
 
 
-/* animalprison class */
+/* 캐릭터가 갇힌 상태에서의 클래스 */
 typedef struct animalprison_t animalprison_t;
 struct animalprison_t {
     item_t item; /* base class */
@@ -109,7 +89,7 @@ static int animalprison_got_hit_by_player(item_t *item, player_t *player);
 
 
 
-/* public methods */
+/* 캐릭터 객체(감옥)에 갇힌 상태 생성 */
 item_t* animalprison_create()
 {
     item_t *item = mallocx(sizeof(animalprison_t));
@@ -127,7 +107,7 @@ item_t* animalprison_create()
 
 
 
-/* private methods */
+/* 캐릭터가 갇힌 상태 설치 */
 void animalprison_set_state(item_t *item, state_t *state)
 {
     animalprison_t *me = (animalprison_t*)item;
@@ -138,9 +118,9 @@ void animalprison_set_state(item_t *item, state_t *state)
     me->state = state;
 }
 
+/* 캐릭터가 객체(감옥)에 갇힌 상태 초기화 하는 함수 */
 void animalprison_init(item_t *item)
 {
-    item->always_active = FALSE;
     item->obstacle = FALSE;
     item->bring_to_back = TRUE;
     item->preserve = TRUE;
@@ -150,12 +130,13 @@ void animalprison_init(item_t *item)
     actor_change_animation(item->actor, sprite_get_animation("SD_ENDLEVEL", 0));
 }
 
+/* 캐릭터가 감옥에서 풀려난 상태 함수 */
 void animalprison_release(item_t* item)
 {
     actor_destroy(item->actor);
     animalprison_set_state(item, NULL);
 }
-
+/*캐릭터가 갇힌 상태에서의 조작과 카메라 위치 */
 void animalprison_update(item_t* item, player_t** team, int team_size, brick_list_t* brick_list, item_list_t* item_list, enemy_list_t* enemy_list)
 {
     animalprison_t *me = (animalprison_t*)item;
@@ -167,7 +148,7 @@ void animalprison_render(item_t* item, v2d_t camera_position)
     actor_render(item->actor, camera_position);
 }
 
-/* states: constructors */
+/* 감옥에서 풀려난 상태 */
 state_t* state_idle_new()
 {
     state_t *base = mallocx(sizeof(state_idle_t));
@@ -179,7 +160,7 @@ state_t* state_idle_new()
 
     return base;
 }
-
+/* 감옥에서 풀려난 상태에서 상태 재생성 */
 state_t* state_exploding_new()
 {
     state_t *base = mallocx(sizeof(state_exploding_t));
@@ -191,14 +172,14 @@ state_t* state_exploding_new()
 
     return base;
 }
-
+/* 풀려난 상태에서의 조작 메모리 동적 할당 */
 state_t* state_releasing_new()
 {
     state_t *base = mallocx(sizeof(state_releasing_t));
     base->handle = state_releasing_handle;
     return base;
 }
-
+/* 풀려난 상태에서의 조작 메모리 동적 할당 */
 state_t* state_broken_new()
 {
     state_t *base = mallocx(sizeof(state_broken_t));
@@ -206,7 +187,7 @@ state_t* state_broken_new()
     return base;
 }
 
-/* implementation of the states */
+/* 상태 구현 */
 void state_idle_handle(state_t *state, item_t *item, player_t **team, int team_size)
 {
     int i;
@@ -216,19 +197,19 @@ void state_idle_handle(state_t *state, item_t *item, player_t **team, int team_s
     for(i=0; i<team_size; i++) {
         player_t *player = team[i];
         if(animalprison_got_hit_by_player(item, player) && !s->being_hit) {
-            /* oh no! the player is attacking this object! */
+            /* 캐릭터가 이 개체를 공격 할때 */
             s->being_hit = TRUE;
             actor_change_animation(act, sprite_get_animation("SD_ENDLEVEL", 1));
             sound_play( soundfactory_get("boss hit") );
-            player_bounce(player, act);
+            player_bounce(player);
             player->actor->speed.x *= -0.5;
 
-            if(++(s->hit_count) >= 3) /* 3 hits and you're done */
+            if(++(s->hit_count) >= 3) /* 3번 공격하면 감옥에서 풀려나는 상태 */
                 animalprison_set_state(item, state_exploding_new());
         }
     }
 
-    /* after getting hit, restore the animation */
+    /* 타격을 받은 후 복원 */
     if(actor_animation_finished(act) && s->being_hit) {
         actor_change_animation(act, sprite_get_animation("SD_ENDLEVEL", 0));
         s->being_hit = FALSE;
@@ -244,11 +225,11 @@ void state_exploding_handle(state_t *state, item_t *item, player_t **team, int t
     s->explode_timer += dt;
     s->break_timer += dt;
 
-    /* keep exploding for a while... */
+    /* 감옥에서 풀려난 상태를 유지 (잠시 동안) */
     if(s->explode_timer >= 0.1f) {
         v2d_t pos = v2d_new(
-            act->position.x - act->hot_spot.x + random(image_width(actor_image(act))),
-            act->position.y - act->hot_spot.y + random(image_height(actor_image(act))/2)
+            act->position.x - act->hot_spot.x + random(actor_image(act)->w),
+            act->position.y - act->hot_spot.y + random(actor_image(act)->h/2)
         );
         level_create_item(IT_EXPLOSION, pos);
         sound_play( soundfactory_get("explode") );
@@ -256,7 +237,7 @@ void state_exploding_handle(state_t *state, item_t *item, player_t **team, int t
         s->explode_timer = 0.0f;
     }
 
-    /* okay, I can't explode anymore */
+    /* 더이상 감옥에서 풀려날 수 없는 상태 */
     if(s->break_timer >= 2.0f)
         animalprison_set_state(item, state_releasing_new());
 }
@@ -266,16 +247,16 @@ void state_releasing_handle(state_t *state, item_t *item, player_t **team, int t
     actor_t *act = item->actor;
     int i;
 
-    /* release the animals! */
+    /* 캐릭터 감옥 해체 */
     for(i=0; i<20; i++) {
         v2d_t pos = v2d_new(
-            act->position.x - act->hot_spot.x + random(image_width(actor_image(act))),
-            act->position.y - act->hot_spot.y + random(image_height(actor_image(act))/2)
+            act->position.x - act->hot_spot.x + random(actor_image(act)->w),
+            act->position.y - act->hot_spot.y + random(actor_image(act)->h/2)
         );
         level_create_animal(pos);
     }
 
-    /* congratulations! you have just cleared the level! */
+    /* 이번 단계를 통과한 상태 */
     level_clear(act);
 
     /* sayonara bye bye */
@@ -285,11 +266,11 @@ void state_releasing_handle(state_t *state, item_t *item, player_t **team, int t
 
 void state_broken_handle(state_t *state, item_t *item, player_t **team, int team_size)
 {
-    ; /* do nothing */
+    ;
 }
 
 /* misc */
-/* returns true if the animal prison got hit by the given player */
+/* 캐릭터가 감옥에 들어 갔을 경우 상태 값을 반환 */
 int animalprison_got_hit_by_player(item_t *item, player_t *player)
 {
     float a[4], b[4];
@@ -298,14 +279,13 @@ int animalprison_got_hit_by_player(item_t *item, player_t *player)
 
     a[0] = pl->position.x - pl->hot_spot.x;
     a[1] = pl->position.y - pl->hot_spot.y;
-    a[2] = a[0] + image_width(actor_image(pl));
-    a[3] = a[1] + image_height(actor_image(pl));
+    a[2] = a[0] + actor_image(pl)->w;
+    a[3] = a[1] + actor_image(pl)->h;
 
     b[0] = act->position.x - act->hot_spot.x + 5;
     b[1] = act->position.y - act->hot_spot.y;
-    b[2] = b[0] + image_width(actor_image(act)) - 10;
-    b[3] = b[1] + image_height(actor_image(act))/2;
+    b[2] = b[0] + actor_image(act)->w - 10;
+    b[3] = b[1] + actor_image(act)->h/2;
 
-    return (player_is_attacking(player) && bounding_box(a,b) && actor_pixelperfect_collision(act,pl));
+    return (player_attacking(player) && bounding_box(a,b) && actor_pixelperfect_collision(act,pl));
 }
-

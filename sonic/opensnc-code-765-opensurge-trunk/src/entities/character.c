@@ -31,12 +31,12 @@ HASHTABLE_GENERATE_CODE(character_t)
 static hashtable_character_t* characters;
 
 /* private functions */
-static character_t *character_new(const char *name); /* creates a new character_t instance */
-static void character_delete(character_t* c); /* deletes c */
+static character_t *character_new(const char *name); /* 새로운 character_t 인스턴스를 생성하는 함수 */
+static void character_delete(character_t* c); /* character_t 변수인 c를 삭제하는 함수 */
 
-static int dirfill(const char *filename, void *param); /* file system callback */
-static void register_character(character_t *c); /* adds c to the hash table */
-static void validate_character(character_t *c); /* validates c */
+static int dirfill(const char *filename, void *param); /* 파일시스템을 callback해주는 함수 */
+static void register_character(character_t *c); /* character_t 변수인 c를 해시테이블에 추가하는 함수 */
+static void validate_character(character_t *c); /* character_t 변수인 c가 타당한지 검사하는 함수 */
 
 static int traverse(const parsetree_statement_t *stmt);
 static int traverse_character(const parsetree_statement_t *stmt, void *character);
@@ -54,15 +54,15 @@ void charactersystem_init()
     logfile_message("Loading characters...");
     characters = hashtable_character_t_create(character_delete);
 
-    /* Reading the parse tree */
+    /* parse tree를 읽어온다. */
     foreach_resource(path, dirfill, (void*)(&prog), TRUE);
     if(prog == NULL)
         fatal_error("FATAL ERROR: no characters have been found. Please reinstall the game.");
 
-    /* reading the characters */
+    /* 캐릭터를 읽어온다. */
     nanoparser_traverse_program(prog, traverse);
 
-    /* we're done! */
+    /* 완료되었는지 확인 */
     prog = nanoparser_deconstruct_tree(prog);
     logfile_message("All characters have been loaded!");
 }
@@ -102,7 +102,7 @@ character_t *character_new(const char *name)
     c->multiplier.slp = 1.0f;
     c->multiplier.rolluphillslp = 1.0f;
     c->multiplier.rolldownhillslp = 1.0f;
-    
+
     c->animation.sprite_name = str_dup("");
     c->animation.stopped = 0;
     c->animation.walking = 0;

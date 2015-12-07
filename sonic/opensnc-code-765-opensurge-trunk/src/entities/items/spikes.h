@@ -1,8 +1,6 @@
 /*
- * Open Surge Engine
  * spikes.h - spikes
  * Copyright (C) 2010  Alexandre Martins <alemartf(at)gmail(dot)com>
- * http://opensnc.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -28,7 +28,7 @@
 #include "../core/spatialhash.h"
 #include "../core/util.h"
 
-/* defining the spatial hashes */
+/* 공간 해시를 정의한다. */
 SPATIALHASH_GENERATE_CODE(brick_t)
 SPATIALHASH_GENERATE_CODE(item_t)
 SPATIALHASH_GENERATE_CODE(enemy_t)
@@ -72,7 +72,13 @@ static int get_object_ypos(const enemy_t *object);
 static int get_object_width(const enemy_t *object);
 static int get_object_height(const enemy_t *object);
 
+/* entity manager는 entity내부에 있는 enemy, brick, item, charcter 등
+ * 모든 객체들을 관리하는 파일이다.
+ * 따라서 entity manager의 함수 역시 각각의 객체들을 관리하는 함수들로 이루어져 있다.
+ */
+
 /* public methods */
+/* entity manager를 초기화 하는 함수 */
 void entitymanager_init()
 {
     logfile_message("Initializing the Entity Manager...");
@@ -94,7 +100,7 @@ void entitymanager_init()
     items = spatialhash_item_t_create(item_destroy, get_item_xpos, get_item_ypos, get_item_width, get_item_height);
     objects = spatialhash_enemy_t_create(enemy_destroy, get_object_xpos, get_object_ypos, get_object_width, get_object_height);
 }
-
+/* entity manager를 해제하는 함수 */
 void entitymanager_release()
 {
     logfile_message("Releasing the Entity Manager...");

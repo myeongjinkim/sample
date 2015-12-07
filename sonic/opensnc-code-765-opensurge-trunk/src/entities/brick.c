@@ -42,7 +42,7 @@
 
 /* private data */
 #define BRKDATA_MAX                 16384 /* this engine supports up to BRKDATA_MAX bricks per theme */
-static int brickdata_count; /* size of brickdata[] */
+static int brickdata_count; /* birckdata의 사이즈(배열의 요소의 갯수) */
 static brickdata_t* brickdata[BRKDATA_MAX]; /* brick data */
 
 /* private functions */
@@ -66,7 +66,7 @@ static int traverse_brick_attributes(const parsetree_statement_t *stmt, void *br
 
 /*
  * brickdata_load()
- * Loads all the brick theme from a file
+ * 파일로 부터 brick 테마를 불러오는 함수.
  */
 void brickdata_load(const char *filename)
 {
@@ -78,7 +78,7 @@ void brickdata_load(const char *filename)
     resource_filepath(abs_path, filename, sizeof(abs_path), RESFP_READ);
 
     brickdata_count = 0;
-    for(i=0; i<BRKDATA_MAX; i++) 
+    for(i=0; i<BRKDATA_MAX; i++)
         brickdata[i] = NULL;
 
     tree = nanoparser_construct_tree(abs_path);
@@ -101,7 +101,7 @@ void brickdata_load(const char *filename)
 
 /*
  * brickdata_unload()
- * Unloads brick data
+ * brick 데이터를 unload하는 함수.
  */
 void brickdata_unload()
 {
@@ -119,7 +119,7 @@ void brickdata_unload()
 
 /*
  * brickdata_get()
- * Gets a brickdata_t* object
+ * brickdata_t 객체를 가져오는 함수
  */
 brickdata_t *brickdata_get(int id)
 {
@@ -130,7 +130,7 @@ brickdata_t *brickdata_get(int id)
 
 /*
  * brickdata_size()
- * How many bricks are loaded?
+ * 저장된 brick의 갯수를 파악하는 함수.
  */
 int brickdata_size()
 {
@@ -144,7 +144,7 @@ int brickdata_size()
 
 /*
  * brick_create()
- * Spawns a new brick
+ * 새로운 벽돌을 생성하는 함수.
  */
 brick_t* brick_create(int id)
 {
@@ -166,7 +166,7 @@ brick_t* brick_create(int id)
 
 /*
  * brick_destroy()
- * Destroys an existing brick instace
+ * 존재하는 brick 인스턴스를 파괴한다.
  */
 brick_t* brick_destroy(brick_t *brk)
 {
@@ -177,7 +177,7 @@ brick_t* brick_destroy(brick_t *brk)
 
 /*
  * brick_update()
- * Updates a brick
+ * brick을 업데이트한다.
  */
 void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *brick_list, item_list_t *item_list, enemy_list_t *enemy_list)
 {
@@ -187,7 +187,7 @@ void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *br
         return;
 
     switch(brk->brick_ref->behavior) {
-        /* breakable bricks */
+        /* 파괴할 수 있는 bricks */
         case BRB_BREAKABLE: {
             int brkw = image_width(brk->brick_ref->image);
             int brkh = image_height(brk->brick_ref->image);
@@ -226,7 +226,7 @@ void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *br
             break;
         }
 
-        /* falling bricks */
+        /* 떨어지는 bricks */
         case BRB_FALL: {
             int i;
             int brkw = image_width(brk->brick_ref->image);
@@ -241,7 +241,7 @@ void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *br
                 a[3] = a[1] + image_height(actor_image(team[i]->actor))/2 + 6;
                 bb = bb || bounding_box(a, b);
             }
-            
+
             if(brk->state == BRS_IDLE && bb)
                 brk->state = BRS_ACTIVE;
 
@@ -271,7 +271,7 @@ void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *br
             break;
         }
 
-        /* moveable bricks */
+        /* 움직이는 bricks */
         case BRB_CIRCULAR: {
             int brkw = image_width(brk->brick_ref->image);
             int brkh = image_height(brk->brick_ref->image);
@@ -327,7 +327,7 @@ void brick_update(brick_t *brk, player_t** team, int team_size, brick_list_t *br
 
 /*
  * brick_render()
- * Renders a brick
+ * brick을 생성한다.
  */
 void brick_render(brick_t *brk, v2d_t camera_position)
 {
@@ -347,7 +347,7 @@ void brick_render(brick_t *brk, v2d_t camera_position)
 
 /*
  * brick_render_path()
- * Renders the path of a brick (if it's a moveable platform)
+ * brick의 경로를 생성한다. (움직일수 있는 플랫폼일 경우)
  */
 void brick_render_path(const brick_t *brk, v2d_t camera_position)
 {
@@ -391,8 +391,8 @@ void brick_render_path(const brick_t *brk, v2d_t camera_position)
 
 /*
  * brick_moveable_platform_offset()
- * Moveable platforms must move actors on top of them.
- * Returns a delta_space vector.
+ * 이동식 플랫폼은 그 위에 actor를 놓고 이동해야한다.
+ * delta_space vector값을 return한다.
  */
 v2d_t brick_moveable_platform_offset(const brick_t *brk)
 {
@@ -423,7 +423,7 @@ v2d_t brick_moveable_platform_offset(const brick_t *brk)
 
 /*
  * brick_image()
- * Returns the image of an (animated?) brick
+ * brick의 이미지를 돌려준다.
  */
 const image_t *brick_image(const brick_t *brk)
 {
@@ -434,7 +434,7 @@ const image_t *brick_image(const brick_t *brk)
 
 /*
  * brick_collisionmask()
- * Returns the collision mask of a brick
+ * brick의 충돌값을 돌려준다.
  */
 const collisionmask_t *brick_collisionmask(const brick_t *brk)
 {
@@ -445,7 +445,7 @@ const collisionmask_t *brick_collisionmask(const brick_t *brk)
 
 /*
  * brick_get_property_name()
- * Returns the name of a given brick property
+ * 주어진 brick 속성의 이름을 return해주는 함수.
  */
 const char* brick_get_property_name(brickproperty_t property)
 {
@@ -468,7 +468,7 @@ const char* brick_get_property_name(brickproperty_t property)
 
 /*
  * brick_get_behavior_name()
- * Returns the name of a given brick behavior
+ * 주어진 brick 동작의 이름을 return해주는 함수.
  */
 const char* brick_get_behavior_name(brickbehavior_t behavior)
 {
@@ -490,7 +490,7 @@ const char* brick_get_behavior_name(brickbehavior_t behavior)
     }
 }
 
-/* utilities */
+/* 유틸리티 */
 uint32 bricklayer2color(bricklayer_t layer)
 {
     switch(layer) {
@@ -523,12 +523,12 @@ bricklayer_t colorname2bricklayer(const char *name)
 
 /* === private stuff === */
 
-/* Animates a brick */
+/* brick을 움직이게 한다. */
 void brick_animate(brick_t *brk)
 {
     spriteinfo_t *sprite = brk->brick_ref->data;
 
-    if(sprite != NULL) { /* if brk is not a fake brick */
+    if(sprite != NULL) { /* brk가 가짜 brick이 아닌경우 */
         int loop = sprite->animation_data[0]->repeat;
         int f, c = sprite->animation_data[0]->frame_count;
 
@@ -544,7 +544,7 @@ void brick_animate(brick_t *brk)
 
 
 
-/* new brick theme */
+/* 새로운 brick 테마 */
 brickdata_t* brickdata_new()
 {
     int i;
@@ -564,7 +564,7 @@ brickdata_t* brickdata_new()
     return obj;
 }
 
-/* delete brick theme */
+/* brick 테마 삭제 */
 brickdata_t* brickdata_delete(brickdata_t *obj)
 {
     if(obj != NULL) {
@@ -577,14 +577,14 @@ brickdata_t* brickdata_delete(brickdata_t *obj)
     return NULL;
 }
 
-/* validates a brick theme */
+/* brick 테마를 유효하게 함 */
 void validate_brickdata(const brickdata_t *obj)
 {
     if(obj->data == NULL)
         fatal_error("Can't load bricks: all bricks must have a sprite!");
 }
 
-/* traverses a .brk file */
+/* .brk 파일을 이동한다. */
 int traverse(const parsetree_statement_t *stmt)
 {
     const char *identifier;
@@ -621,7 +621,7 @@ int traverse(const parsetree_statement_t *stmt)
     return 0;
 }
 
-/* traverses a brick { ... } block */
+/* brick을 {...} 블록으로 이동한다. */
 int traverse_brick_attributes(const parsetree_statement_t *stmt, void *brickdata)
 {
     const char *identifier;
@@ -698,4 +698,3 @@ int traverse_brick_attributes(const parsetree_statement_t *stmt, void *brickdata
 
     return 0;
 }
-

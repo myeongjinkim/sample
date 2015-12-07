@@ -26,7 +26,7 @@
 /* objectdecorator_setabsoluteposition_t class */
 typedef struct objectdecorator_setabsoluteposition_t objectdecorator_setabsoluteposition_t;
 struct objectdecorator_setabsoluteposition_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     expression_t *pos_x, *pos_y;
 };
 
@@ -42,7 +42,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setabsoluteposition_new(objectmachine_t *decorated_machine, expression_t *xpos, expression_t *ypos)
 {
     objectdecorator_setabsoluteposition_t *me = mallocx(sizeof *me);

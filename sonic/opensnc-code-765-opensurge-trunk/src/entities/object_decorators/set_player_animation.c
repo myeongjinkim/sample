@@ -27,7 +27,7 @@
 /* objectdecorator_setplayeranimation_t class */
 typedef struct objectdecorator_setplayeranimation_t objectdecorator_setplayeranimation_t;
 struct objectdecorator_setplayeranimation_t {
-    objectdecorator_t base; /* inherits from objectdecorator_t */
+    objectdecorator_t base; /* objectdecorator_t에서 상속 */
     char *sprite_name;
     expression_t *animation_id;
 };
@@ -44,7 +44,7 @@ static void render(objectmachine_t *obj, v2d_t camera_position);
 
 /* public methods */
 
-/* class constructor */
+/* class 생성자 */
 objectmachine_t* objectdecorator_setplayeranimation_new(objectmachine_t *decorated_machine, const char *sprite_name, expression_t *animation_id)
 {
     objectdecorator_setplayeranimation_t *me = mallocx(sizeof *me);
@@ -55,7 +55,7 @@ objectmachine_t* objectdecorator_setplayeranimation_new(objectmachine_t *decorat
     obj->release = release;
     obj->update = update;
     obj->render = render;
-    obj->get_object_instance = objectdecorator_get_object_instance; /* inherits from superclass */
+    obj->get_object_instance = objectdecorator_get_object_instance; /* superclass에서 상속 */
     dec->decorated_machine = decorated_machine;
     me->sprite_name = str_dup(sprite_name);
     me->animation_id = animation_id;
